@@ -1,0 +1,17 @@
+STEP 1:-
+
+find open ports 80 http, 4512 ssh
+
+so i open website on port 80 and show the web uses a wordpress, so uses wpscan tool and scan website but i don't find anything.
+this website have a word press login page so i try to find username and password.
+cmd:-wpscan --url [url] -e u -P [passwordlist_file path]
+this give cred. than i go to website and show the appearrnse section have a  editor and enside this have a 404 php file and this also have edit by this user
+
+STEP 2:-
+
+using php revershell i connect to server and find in /var/www/html user credentail and than go to my terminal and using this cred i login in ssh server and than escalate privilages.
+
+
+also when i connect webserver through nc i also using 
+cmd:-python3 -c "import pty;pty.shawn('/bin/sh');"
+gain shell and than using su i switch user, this way i don't need ssh.

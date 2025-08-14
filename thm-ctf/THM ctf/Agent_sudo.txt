@@ -1,0 +1,89 @@
+-------------------------------------------------------------------------------------------------------------------------------------
+
+NOTE:- we also uses here is GTFOBins website
+and also uses
+tool:-
+searchsploit
+to find vuln
+ 
+zip2john is a tool from the John the Ripper (JtR) suite used to extract password hashes from ZIP archives. These hashes can then be cracked using john.
+
+📂 Step-by-Step Example
+
+    Get the hash from a ZIP file:
+
+zip2john myarchive.zip > zip_hash.txt
+
+Start cracking with John:
+
+john zip_hash.txt
+
+Check cracked password(s):
+
+john --show zip_hash.txt
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+step 1:- first scan the terget using nmap
+CMD:-nmap -sV -p ip
+ftp
+ssh
+http
+we show the open ports and server and running services and version.
+
+step 2:- than we go to browser and open ip(web). show the web tell the use your name as codename on user agent
+but we have not any name so we using burp to capture request and  delete all info in user-agent and type R. this R give from website like agent R. so we try and show the this will work
+response:-why ary you use 1 of 25 employe name. here we show the componey have 26 employ with R, so we know all employe id is A-Z.
+ so we try A,B,C here C so the password is weak and send to J also show mus to his username.
+ 
+step 3:- after we know the username using hydra bruteforse on ftp and login
+
+CMD:-hydra -l [username] -P [path of password file]  -u [ftp://ip]
+
+ here we find password of over username.
+ 
+step 4:- than login with those credential on ftp server and get some file and images.
+ 
+ CMD:-cat [image name]
+ 
+ we show the To_agentR.txt=........
+ so we using binwalk end extract image hidden data to in file
+ 
+CMD:-binwalk -e [image name] 
+
+Than go to this folder but here is one problem. the zip file is not extracting becuse the zip is uses password hashing encryption.
+ 
+step 5:- here we uses zip2john this will etract all password hashes in file
+
+CMD:-zip2john [zip name] > [file name you want extract ex:-name.txt]
+
+after that we show the name.txt file made and inside the file is zip password hash.
+so, using john we crack the hash
+
+CMD:- john name.txt
+
+this will give the password of zip file
+
+step 6:- after that we uses 7z on zip file
+
+CMD:-7z e [zip name]
+
+here this need to pass that we extract before using john
+than we open file To_agentR.txt and show the inside the file is password.
+
+than we uses on steganography on another image file this will give the username. above password is the this username.
+
+tool:-
+exiftool
+binwalk
+steghide
+
+
+step 7:- than we goto ssh server and enter this credential and enter ssh server shell
+
+than we escalation priviliges user to root
+
+CMD:-sudo -l 
+
+than will give output we need just copy and past on google and find related bugs mean CVE.
+than we uses this CVE and become root

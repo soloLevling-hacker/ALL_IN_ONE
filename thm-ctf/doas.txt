@@ -1,0 +1,39 @@
+The doas.conf file is the configuration file for the doas command, which is a minimal and secure alternative to sudo, originally developed for OpenBSD but also available on Linux.
+📄 Location
+
+Usually found at:
+
+/etc/doas.conf
+
+🔧 Basic Syntax
+
+Each rule typically follows this format:
+
+permit [options] [user] [as target_user] [cmd [args]]
+
+✅ Common Examples
+1. Allow a user to run all commands as root
+
+permit khush
+
+2. Allow a user to run a specific command as root
+
+permit khush as root cmd /sbin/poweroff
+
+3. Allow a user to run any command as any user
+
+permit khush as any
+
+4. Allow a user to run commands without a password
+
+permit nopass khush
+
+
+✅ Example Minimal File
+
+# Allow khush to run anything as root without password
+permit nopass khush
+
+🔁 Apply Changes
+
+No service restart is needed after editing doas.conf. Just save the file and doas will use it next time you run a command.

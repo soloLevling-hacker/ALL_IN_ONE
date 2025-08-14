@@ -1,0 +1,27 @@
+steps:-
+
+1. scan the target mashine using nmap,enum4linux,etc.. and find open ports, os, os version, database and version, etc...
+2. gether all information and analysis than find what can do further.
+3. use enumaration on ports and web than find credentials, other info that can help us to exploite target.
+4. after clearing this step we need to enter the server and input the revershell this will make backdoor.
+5. after all step complete we gether all info wnever we want.
+
+---------
+tools:-
+---------
+nmap
+enum4linux
+exiftool
+STEGHIDE
+BINWALK
+hydra
+metasploite
+nc
+
+--------
+port:-
+--------
+ssh
+telnet
+pop3
+ftp

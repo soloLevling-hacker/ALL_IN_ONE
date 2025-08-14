@@ -1,0 +1,121 @@
+Question 1 — Which of the above files are owned by the best-group group(enter the answer separated by spaces in alphabetical order)
+
+CMD:-find / -group best-group 2>/dev/null
+USE:-
+The command searches for files or directories in the entire file system with the group best-group, and hides error messages from the user.
+
+find /: Searches from the root directory (/) of the file system. This means the search will be performed across all directories and files in the system.
+
+-group best-group: Searches for files or directories whose group is best-group. If there are files or directories owned by this group, they will be found and displayed.
+
+2>/dev/null: Redirects error messages to /dev/null, so they do not appear in the output. This is useful when you want to ignore error messages, such as insufficient permissions to access certain files or directories.
+
+Question 2 — Which of these files contain an IP address?
+
+CMD:-find / -type f \( -name 8V2L -o -name bny0 -o -name c4ZX -o -name D8B3 -o -name FHl1 -o -name oiMO -o -name PFbD -o -name rmfX -o -name SRSq -o -name uqyw -o -name v2Vb -o -name X1Uy \) -exec grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' * {} \; 2>/dev/null
+
+USE:-
+The command searches for files with specific names in the root of the file system and performs an IP address search within each found file, while ignoring error messages.
+
+find /: Starts searching from the root directory (/) of the file system, meaning it will search through all directories and files in the system.
+
+-type f: Limits the search to files only (not directories).
+
+-exec: This command executes a command on every file found.
+
+grep -E -o ‘(25[0–5]|2[0–4][0–9]|[01]?[0–9][0–9]?).(25[0–5]|2[0–4][0–9]|[01]?[0–9][0–9]?).(25[0–5]|2[0–4][0–9]|[01]?[0–9][0–9]?).(25[0–5]|2[0–4][0–9]|[01]?[0–9][0–9]?)’:
+
+grep -E: Uses the extended version of grep, allowing the use of extended regular expressions.
+-o: Prints only the match itself, not the entire line. The regular expression searches for IP addresses in IPv4 format, identifying four groups of numbers between 0 and 255, separated by dots.
+
+{} ;: Marks the end of the command to be executed on each found file. {} represents the found file.
+
+2>/dev/null: Redirects error messages to /dev/null, so they do not appear in the output. This is useful when you want to ignore error messages, such as when you don't have permission to access certain files.
+
+
+Question 3 — Which file has the SHA1 hash of 9d54da7584015647ba052173b84d45e8007eba94
+
+CMD:-find / -type f \( -name 8V2L -o -name bny0 -o -name c4ZX -o -name D8B3 -o -name FHl1 -o -name oiMO -o -name PFbD -o -name rmfX -o -name SRSq -o -name uqyw -o -name v2Vb -o -name X1Uy \) -exec sha1sum {} \; 2>/dev/null
+
+USE:- The command searches for specific files by name throughout the entire file system, calculates the SHA-1 hash for each of them, and hides any error messages.
+
+find /: Searches in the root directory (/) of the file system. This means it will search throughout the entire file system, including subdirectories.
+
+-type f: Specifies that the search is limited to files only.
+
+-exec sha1sum {} ;:
+
+    -exec: Indicates that the following command will be executed on every file found.
+    sha1sum: Calculates the SHA-1 hash for the file.
+    {}: Represents each file found by the find command.
+    ;: Marks the end of the command to be executed on the files.
+
+2>/dev/null: Redirects error messages to /dev/null, so they are not displayed. This is useful to hide error messages caused by insufficient permissions to access certain files.
+
+
+Question 4 — Which file contains 230 lines?
+
+CMD;-find / -type f \( -name 8V2L -o -name bny0 -o -name c4ZX -o -name D8B3 -o -name FHl1 -o -name oiMO -o -name PFbD -o -name rmfX -o -name SRSq -o -name uqyw -o -name v2Vb -o -name X1Uy \) -exec wc -l {} \; 2>/dev/null
+
+USE:-
+The command searches for files by specific names in the file system and counts the lines in each file found using the wc -l command. Error messages are hidden from the user.
+
+find /: Searches from the root directory (/) of the file system, meaning the search will be conducted through all directories and files in the system.
+
+-type f: Limits the search to files only
+
+exec: Indicates that the following command will be executed on each file found.
+
+wc -l: The wc command counts words and characters, and with the -l flag, it counts the number of lines in the file.
+
+{}: Represents each file found during the search.
+
+;: Marks the end of the command to be executed on each file found.
+
+2>/dev/null: Redirects error messages to /dev/null so that they don’t appear in the output. This is useful for hiding error messages, for example, when there are insufficient permissions to access certain files.
+
+Everything we got in the list are files that do not match our needs. So, we are left with only one file.
+
+
+Question 5 — Which file’s owner has an ID of 502?
+
+CMD:-find / -type f \( -name 8V2L -o -name bny0 -o -name c4ZX -o -name D8B3 -o -name FHl1 -o -name oiMO -o -name PFbD -o -name rmfX -o -name SRSq -o -name uqyw -o -name v2Vb -o -name X1Uy \) -exec ls -ln {} \; 2>/dev/null
+
+USE:-
+The command searches for files with specific names and displays detailed information about them while ignoring error messages.
+
+find /: Starts a search from the root directory (/) of the filesystem. This means the search will be conducted in all directories and files in the system.
+
+-type f: Limits the search to files only (not directories).
+
+-exec: Indicates that the following command will be executed on each found file.
+
+ls -ln: The ls command with flags that display detailed information about the files.
+
+{}: Represents the name of each file found.
+
+;: Marks the end of the command to be executed on each found file.
+
+2>/dev/null: Redirects error messages to /dev/null, so they will not be displayed in the output. This is useful for hiding error messages, such as when there are insufficient permissions to access certain files.
+
+
+Question 6 — Which file is executable by everyone?
+
+CMD:-find / -type f \( -name 8V2L -o -name bny0 -o -name c4ZX -o -name D8B3 -o -name FHl1 -o -name oiMO -o -name PFbD -o -name rmfX -o -name SRSq -o -name uqyw -o -name v2Vb -o -name X1Uy \) -exec ls -ln {} \; 2>/dev/null
+
+USE:-
+The command searches for files with specific names and displays detailed information about them while ignoring error messages.
+
+find /: Starts a search from the root directory (/) of the filesystem. This means the search will be conducted in all directories and files in the system.
+
+-type f: Limits the search to files only (not directories).
+
+-exec: Indicates that the following command will be executed on each found file.
+
+ls -ln: The ls command with flags that display detailed information about the files.
+
+{}: Represents the name of each file found.
+
+;: Marks the end of the command to be executed on each found file.
+
+2>/dev/null: Redirects error messages to /dev/null, so they will not be displayed in the output. This is useful for hiding error messages, such as when there are insufficient permissions to access certain files.

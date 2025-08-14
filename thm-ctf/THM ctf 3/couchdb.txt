@@ -1,0 +1,110 @@
+open ports 22,5984
+here is server uses couchdb 1.6.1 so i goto the browser and search couchdb cheatsheat.
+than using this i ritrive info username and password and than goto ssh server using cred.
+than i show .bash_history this give us to some docker cmd to escalate root privileges.
+
+
+cheatsheat of couchdb:-
+
+    Database Operations.
+
+* Get database
+GET /{YOUR_DATABASE_NAME}
+
+* Create database
+PUT /{YOUR_DATABASE_NAME}
+
+* Delete database
+DELETE /{YOUR_DATABASE_NAME}
+
+    Create a new document in the specified database.
+
+POST /{YOUR_DATABASE_NAME}
+
+    List all documents in the database
+
+GET /{YOUR_DATABASE_NAME}/_all_docs
+
+    Query several documents in bulk
+
+POST /{YOUR_DATABASE_NAME}/_bulk_get
+
+    Create / Update documents in bulk
+
+POST /{YOUR_DATABASE_NAME}/_bulk_docs
+
+    Find documents with JSON querying syntax (Mango Query)
+
+POST /{YOUR_DATABASE_NAME}/_find
+
+    Setup database security
+
+* Get security object
+GET /{YOUR_DATABASE_NAME}/_security
+
+* Set security object
+PUT /{YOUR_DATABASE_NAME}/_security
+
+Documents
+
+    Document CRUD
+
+* Get a specific document
+GET /{YOUR_DATABASE_NAME}/{DOCUMENT_ID}
+
+* Create or Update a specific document
+PUT /{YOUR_DATABASE_NAME}/{DOCUMENT_ID}
+
+* Delete a specific document
+DELETE /{YOUR_DATABASE_NAME}/{DOCUMENT_ID}
+
+    File Attachment CRUD.
+
+* Get a file attachment associated with the document
+GET /{YOUR_DATABASE_NAME}/{DOCUMENT_ID}/{ATTACHMENT_NAME}
+
+* Upload an attachment to the specified document
+PUT /{YOUR_DATABASE_NAME}/{DOCUMENT_ID}/{ATTACHMENT_NAME}
+
+* Delete an attachment from the specified document
+DELETE /{YOUR_DATABASE_NAME}/{DOCUMENT_ID}/{ATTACHMENT_NAME}
+
+Design Documents
+
+    Design Document CRUD
+
+* Get a design document
+GET /{YOUR_DATABASE_NAME}/_design/{DESIGN_DOCUMENT_ID}
+
+* Create a new design document
+PUT /{YOUR_DATABASE_NAME}/_design/{DESIGN_DOCUMENT_ID}
+
+* Delete a design document
+PUT /{YOUR_DATABASE_NAME}/_design/{DESIGN_DOCUMENT_ID}
+
+    Execute a View function
+
+GET /{YOUR_DATABASE_NAME}/_design/{DESIGN_DOCUMENT_ID}/_view/{VIEW_NAME}
+
+* Execute a view function with query string parameters
+POST /{YOUR_DATABASE_NAME}/_design/{DESIGN_DOCUMENT_ID}/_view/{VIEW_NAME}
+
+    Execute an Update Function
+
+POST /{YOUR_DATABASE_NAME}/_design/{DESIGN_DOCUMENT_ID}/_update/{FUNCTION_NAME}
+
+Bonus
+
+    Authentication For CouchDB v3.0+, currently supports 4 type of authentication methods (Basic, Cookie, Proxy, JWT). Every methods are interacting with the same API endpoint.
+
+GET /_session
+POST /_session
+
+    Database changes
+
+This is an interesting and powerful API which allows you to get a sorted list of changes made to documents in the specified database.
+
+GET /{YOUR_DATABASE_NAME}/_changes
+
+* For query parameter
+POST /{YOUR_DATABASE_NAME}/_changes
